@@ -18,12 +18,13 @@ export class TopicsService {
       throw new ConflictException('Topic name already exists');
     }
 
-    // Convertir category_id a ObjectId si se proporciona
-    if (createTopicDto.category_id) {
-      createTopicDto.category_id = new Types.ObjectId(createTopicDto.category_id);
-    }
+    // Crear un objeto con los datos a insertar, convirtiendo category_id a ObjectId si se proporciona
+    const newTopicData = {
+      ...createTopicDto,
+      category_id: createTopicDto.category_id ? new Types.ObjectId(createTopicDto.category_id) : undefined,
+    };
 
-    const newTopic = new this.topicsModel(createTopicDto);
+    const newTopic = new this.topicsModel(newTopicData);
 
     try {
       return await newTopic.save();
@@ -33,6 +34,7 @@ export class TopicsService {
   }
 
   async findAll(query?: any): Promise<Topics[]> {
+    // Si se pasa un parámetro "category", filtra por category_id convertido a ObjectId
     const filter = query?.category ? { category_id: new Types.ObjectId(query.category) } : {};
     return this.topicsModel.find(filter).exec();
   }
