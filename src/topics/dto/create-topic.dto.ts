@@ -20,13 +20,12 @@ export class CreateTopicDto {
   @MinLength(10)
   description: string;
 
-  /*@ApiProperty({
-    description: "Role ID reference",
-    example: "507f1f77bcf86cd799439011"
+  @ApiPropertyOptional({
+    description: 'ID de la categoría (opcional)',
+    example: '507f1f77bcf86cd799439011'
   })
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @IsMongoId()
-  role_id: string;*/
-
+  category_id?: string;
 }
