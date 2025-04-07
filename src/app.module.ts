@@ -6,7 +6,7 @@ import { TopicsModule } from './topics/topics.module';
 import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
-  imports: [TopicsModule, UsersModule, MongooseModule.forRoot('mongodb+srv://MarioGO:ContraseñaSegura1234567@cluster0.2vqlb.mongodb.net/')],
+  imports: [TopicsModule, UsersModule, MongooseModule.forRoot('mongodb+srv://MarioGO:ContraseñaSegura1234567@cluster0.2vqlb.mongodb.net/api-6to')],
   controllers: [AppController],
   providers: [AppService],
 })
