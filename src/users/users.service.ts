@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Users, UsersDocument } from './users.schema';
@@ -19,13 +19,18 @@ export class UsersService {
       throw new ConflictException('Username already exists');
     }
 
+    // Validar que el rol sea válido
+    if (!['docente', 'estudiante'].includes(createUserDto.role)) {
+      throw new BadRequestException('Invalid role. Must be "docente" or "estudiante"');
+    }
+
     // Hashear la contraseña antes de guardarla
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
     
     const newUser = new this.usersModel({
-      ...createUserDto,
+      user_name: createUserDto.user_name,
       password: hashedPassword,
-      role_id: new Types.ObjectId(createUserDto.role_id) // Convertir a ObjectId
+      role: createUserDto.role // Ahora es un string
     });
 
     try {
@@ -36,16 +41,12 @@ export class UsersService {
   }
 
   async findAll(query?: any): Promise<Users[]> {
-    // Opcional: Filtrar por query params (ej. /users?role=admin)
-    const filter = query?.role ? { 'role_id.name': query.role } : {};
+    // Filtrar por query params (ej. /users?role=docente)
+    const filter = query?.role ? { role: query.role } : {};
     return this.usersModel.find(filter).select('-password').exec(); // Excluir passwords por seguridad
   }
 
   async findOne(id: string): Promise<Users> {
-    if (!Types.ObjectId.isValid(id)) {
-      throw new BadRequestException('Invalid user ID');
-    }
-
     const user = await this.usersModel.findById(id).select('-password').exec();
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
@@ -53,27 +54,19 @@ export class UsersService {
     return user;
   }
 
-  async findByUsername(username: string): Promise<Users> {
-    const user = await this.usersModel.findOne({ user_name: username }).exec();
-    if (!user) {
-      throw new NotFoundException(`User with username ${username} not found`);
-    }
-    return user;
+  async findByUsername(username: string): Promise<UsersDocument | null> {
+    return this.usersModel.findOne({ user_name: username }).select('+password').exec();
   }
-
+  
   async update(id: string, updateUserDto: UpdateUserDto): Promise<Users> {
-    if (!Types.ObjectId.isValid(id)) {
-      throw new BadRequestException('Invalid user ID');
-    }
-
     // Si se actualiza la contraseña, hashearla
     if (updateUserDto.password) {
       updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
     }
 
-    // Si se actualiza el role_id, convertirlo a ObjectId
-    if (updateUserDto.role_id) {
-      updateUserDto.role_id = new Types.ObjectId(updateUserDto.role_id) as any;
+    // Validar el rol si se está actualizando
+    if (updateUserDto.role && !['docente', 'estudiante'].includes(updateUserDto.role)) {
+      throw new BadRequestException('Invalid role. Must be "docente" or "estudiante"');
     }
 
     const updatedUser = await this.usersModel
@@ -88,10 +81,6 @@ export class UsersService {
   }
 
   async remove(id: string): Promise<Users> {
-    if (!Types.ObjectId.isValid(id)) {
-      throw new BadRequestException('Invalid user ID');
-    }
-
     const deletedUser = await this.usersModel.findByIdAndDelete(id).select('-password').exec();
     if (!deletedUser) {
       throw new NotFoundException(`User with id ${id} not found`);
@@ -99,14 +88,16 @@ export class UsersService {
     return deletedUser;
   }
 
-  // Método adicional para validar usuario (útil para auth)
+  // Método para validar usuario (login)
   async validateUser(username: string, pass: string): Promise<Users | null> {
     const user = await this.usersModel.findOne({ user_name: username });
     if (!user) return null;
-
+  
     const isPasswordValid = await bcrypt.compare(pass, user.password);
     if (!isPasswordValid) return null;
-
-    return user.toObject({ versionKey: false });
+  
+    const userObject = user.toObject() as Partial<Users>;
+    delete userObject.password;
+    return userObject as Users;
   }
 }
