@@ -12,8 +12,8 @@ export class Users {
   @Prop({ required: true, select: false }) // select: false para que no se devuelva en consultas por defecto
   password: string;
 
-  @Prop({ type: Types.ObjectId, ref: 'Role', required: true })
-  role_id: Types.ObjectId;
+  @Prop({ required: true, enum: ['docente', 'estudiante'] })
+  role: string;
 
   @Prop()
   createdAt?: Date;

@@ -1,5 +1,5 @@
 import { ApiProperty,ApiPropertyOptional } from "@nestjs/swagger";
-import { IsNotEmpty, IsString, MinLength, Matches, IsMongoId, IsOptional} from "class-validator";
+import { IsNotEmpty, IsString,IsIn, MinLength, Matches, IsMongoId, IsOptional} from "class-validator";
 
 export class CreateUserDto {
   @ApiProperty({
@@ -26,19 +26,10 @@ export class CreateUserDto {
     description: "Role ID reference (optional)",
     example: "507f1f77bcf86cd799439011"
   })
-  @IsOptional()
   @IsString()
-  @IsMongoId()
-  role_id?: string;
-
-  /*@ApiProperty({
-    description: "Role ID reference",
-    example: "507f1f77bcf86cd799439011"
-  })
   @IsNotEmpty()
-  @IsString()
-  @IsMongoId()
-  role_id: string;*/
+  @IsIn(['docente', 'estudiante'], { message: 'Role must be either "docente" or "estudiante"' })
+  role: string;
   
 }
 
