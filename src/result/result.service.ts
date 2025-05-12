@@ -37,17 +37,36 @@ async getScoreByTopic(userId: string, topicId: string): Promise<{ total: number,
 
   async getGlobalRanking(): Promise<{ user_id: string; correct: number }[]> {
     const raw = await this.resultModel.aggregate([
-      { $match: { isCorrect: true } },
+      // 1. Ordena para dejar el más reciente arriba
+      { $sort: { updatedAt: -1 } },
+
+      // 2. Agrupa por usuario y quiz, y guarda el primer resultado
       {
         $group: {
-          _id: "$user_id",
+          _id: { user: "$user_id", quiz: "$quiz_id" },
+          isCorrect: { $first: "$isCorrect" }
+        }
+      },
+
+      // 3. Filtra solo los correctos
+      { $match: { isCorrect: true } },
+
+      // 4. Agrupa por usuario y suma aciertos
+      {
+        $group: {
+          _id: "$_id.user",
           correct: { $sum: 1 }
         }
       },
+
+      // 5. Ordena de mayor a menor
       { $sort: { correct: -1 } }
     ]);
-  
-    return raw.map(r => ({ user_id: r._id.toString(), correct: r.correct }));
+
+    return raw.map(r => ({
+      user_id: r._id.toString(),
+      correct: r.correct
+    }));
   }
   
 }
