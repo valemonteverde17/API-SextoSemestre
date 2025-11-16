@@ -1,5 +1,23 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, MinLength, IsOptional, IsMongoId } from 'class-validator';
+import { IsNotEmpty, IsString, MinLength, IsOptional, IsMongoId, IsArray, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+
+export class ContentBlockDto {
+  @ApiProperty({ example: '1' })
+  @IsString()
+  id: string;
+
+  @ApiProperty({ example: 'text', enum: ['text', 'heading', 'list', 'code', 'quote'] })
+  @IsString()
+  type: 'text' | 'heading' | 'list' | 'code' | 'quote';
+
+  @ApiProperty({ example: 'Contenido del bloque' })
+  @IsString()
+  content: string;
+
+  @ApiProperty({ example: 0 })
+  order: number;
+}
 
 export class CreateTopicDto {
   @ApiProperty({
@@ -28,4 +46,14 @@ export class CreateTopicDto {
   @IsString()
   @IsMongoId()
   category_id?: string;
+
+  @ApiPropertyOptional({
+    description: 'Bloques de contenido del tema',
+    type: [ContentBlockDto]
+  })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ContentBlockDto)
+  content?: ContentBlockDto[];
 }
