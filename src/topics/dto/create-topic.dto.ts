@@ -76,6 +76,10 @@ export class ContentBlockDto {
   @IsOptional()
   @IsString()
   htmlContent?: string;
+
+  @ApiPropertyOptional({ example: true })
+  @IsOptional()
+  showCode?: boolean;
 }
 
 export class CreateTopicDto {
@@ -115,4 +119,12 @@ export class CreateTopicDto {
   @ValidateNested({ each: true })
   @Type(() => ContentBlockDto)
   content?: ContentBlockDto[];
+
+  @ApiPropertyOptional({
+    description: 'Color de la card del tema',
+    example: '#2b9997'
+  })
+  @IsOptional()
+  @IsString()
+  cardColor?: string;
 }

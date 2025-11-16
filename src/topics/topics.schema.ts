@@ -22,6 +22,7 @@ export interface ContentBlock {
   order: number;
   style?: BlockStyle;
   htmlContent?: string;
+  showCode?: boolean;
 }
 
 @Schema({ timestamps: true })
@@ -37,6 +38,9 @@ export class Topics {
 
   @Prop({ type: Types.ObjectId, ref: 'Category', required: false })
   category_id?: Types.ObjectId;
+
+  @Prop({ default: '#2b9997' })
+  cardColor?: string;
 
   @Prop()
   createdAt?: Date;
