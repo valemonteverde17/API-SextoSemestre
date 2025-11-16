@@ -1,6 +1,43 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, MinLength, IsOptional, IsMongoId, IsArray, ValidateNested } from 'class-validator';
+import { IsNotEmpty, IsString, MinLength, IsOptional, IsMongoId, IsArray, ValidateNested, IsObject } from 'class-validator';
 import { Type } from 'class-transformer';
+
+export class BlockStyleDto {
+  @ApiPropertyOptional({ example: '#2b9997' })
+  @IsOptional()
+  @IsString()
+  color?: string;
+
+  @ApiPropertyOptional({ example: 'medium', enum: ['small', 'medium', 'large', 'xlarge'] })
+  @IsOptional()
+  @IsString()
+  fontSize?: 'small' | 'medium' | 'large' | 'xlarge';
+
+  @ApiPropertyOptional({ example: 'normal', enum: ['normal', 'bold'] })
+  @IsOptional()
+  @IsString()
+  fontWeight?: 'normal' | 'bold';
+
+  @ApiPropertyOptional({ example: 'normal', enum: ['normal', 'italic'] })
+  @IsOptional()
+  @IsString()
+  fontStyle?: 'normal' | 'italic';
+
+  @ApiPropertyOptional({ example: 'left', enum: ['left', 'center', 'right', 'justify'] })
+  @IsOptional()
+  @IsString()
+  textAlign?: 'left' | 'center' | 'right' | 'justify';
+
+  @ApiPropertyOptional({ example: 'disc', enum: ['disc', 'circle', 'square', 'decimal', 'lower-alpha', 'upper-alpha'] })
+  @IsOptional()
+  @IsString()
+  listStyle?: 'disc' | 'circle' | 'square' | 'decimal' | 'lower-alpha' | 'upper-alpha';
+
+  @ApiPropertyOptional({ example: '#f8f9fa' })
+  @IsOptional()
+  @IsString()
+  backgroundColor?: string;
+}
 
 export class ContentBlockDto {
   @ApiProperty({ example: '1' })
@@ -17,6 +54,13 @@ export class ContentBlockDto {
 
   @ApiProperty({ example: 0 })
   order: number;
+
+  @ApiPropertyOptional({ type: BlockStyleDto })
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => BlockStyleDto)
+  style?: BlockStyleDto;
 }
 
 export class CreateTopicDto {

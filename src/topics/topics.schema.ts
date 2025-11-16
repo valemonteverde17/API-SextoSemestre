@@ -3,11 +3,22 @@ import { HydratedDocument, Types } from 'mongoose';
 
 export type TopicsDocument = HydratedDocument<Topics>;
 
+export interface BlockStyle {
+  color?: string;
+  fontSize?: 'small' | 'medium' | 'large' | 'xlarge';
+  fontWeight?: 'normal' | 'bold';
+  fontStyle?: 'normal' | 'italic';
+  textAlign?: 'left' | 'center' | 'right' | 'justify';
+  listStyle?: 'disc' | 'circle' | 'square' | 'decimal' | 'lower-alpha' | 'upper-alpha';
+  backgroundColor?: string;
+}
+
 export interface ContentBlock {
   id: string;
   type: 'text' | 'heading' | 'list' | 'code' | 'quote';
   content: string;
   order: number;
+  style?: BlockStyle;
 }
 
 @Schema({ timestamps: true })
