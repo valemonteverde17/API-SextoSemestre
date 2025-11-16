@@ -11,14 +11,18 @@ export interface BlockStyle {
   textAlign?: 'left' | 'center' | 'right' | 'justify';
   listStyle?: 'disc' | 'circle' | 'square' | 'decimal' | 'lower-alpha' | 'upper-alpha';
   backgroundColor?: string;
+  codeLanguage?: string;
+  codeTheme?: 'dark' | 'light';
 }
 
 export interface ContentBlock {
   id: string;
-  type: 'text' | 'heading' | 'list' | 'code' | 'quote';
+  type: 'text' | 'heading' | 'list' | 'code' | 'quote' | 'code-static' | 'code-live';
   content: string;
   order: number;
   style?: BlockStyle;
+  htmlContent?: string;
+  cssContent?: string;
 }
 
 @Schema({ timestamps: true })

@@ -37,6 +37,16 @@ export class BlockStyleDto {
   @IsOptional()
   @IsString()
   backgroundColor?: string;
+
+  @ApiPropertyOptional({ example: 'javascript' })
+  @IsOptional()
+  @IsString()
+  codeLanguage?: string;
+
+  @ApiPropertyOptional({ example: 'dark', enum: ['dark', 'light'] })
+  @IsOptional()
+  @IsString()
+  codeTheme?: 'dark' | 'light';
 }
 
 export class ContentBlockDto {
@@ -44,9 +54,9 @@ export class ContentBlockDto {
   @IsString()
   id: string;
 
-  @ApiProperty({ example: 'text', enum: ['text', 'heading', 'list', 'code', 'quote'] })
+  @ApiProperty({ example: 'text', enum: ['text', 'heading', 'list', 'code', 'quote', 'code-static', 'code-live'] })
   @IsString()
-  type: 'text' | 'heading' | 'list' | 'code' | 'quote';
+  type: 'text' | 'heading' | 'list' | 'code' | 'quote' | 'code-static' | 'code-live';
 
   @ApiProperty({ example: 'Contenido del bloque' })
   @IsString()
@@ -61,6 +71,16 @@ export class ContentBlockDto {
   @ValidateNested()
   @Type(() => BlockStyleDto)
   style?: BlockStyleDto;
+
+  @ApiPropertyOptional({ example: '<div>HTML content</div>' })
+  @IsOptional()
+  @IsString()
+  htmlContent?: string;
+
+  @ApiPropertyOptional({ example: 'body { background: red; }' })
+  @IsOptional()
+  @IsString()
+  cssContent?: string;
 }
 
 export class CreateTopicDto {
