@@ -25,6 +25,27 @@ export class ScoresController {
     return this.scoresService.findAll();
   }
 
+  // Rutas específicas primero (antes de :id)
+  @Get('ranking/global')
+  getGlobalRanking() {
+    return this.scoresService.getGlobalRanking();
+  }
+
+  @Get('debug/all-scores')
+  debugAllScores() {
+    return this.scoresService.findAll();
+  }
+
+  @Get('ranking/quiz-set/:quizSetId')
+  getQuizSetRanking(@Param('quizSetId') quizSetId: string) {
+    return this.scoresService.getQuizSetRanking(quizSetId);
+  }
+
+  @Get('stats/:userId')
+  getUserStats(@Param('userId') userId: string) {
+    return this.scoresService.getUserStats(userId);
+  }
+
   @Get('user/:userId')
   findByUser(@Param('userId') userId: string) {
     return this.scoresService.findByUser(userId);
@@ -40,21 +61,7 @@ export class ScoresController {
     return this.scoresService.findByTopic(topicId);
   }
 
-  @Get('ranking/global')
-  getGlobalRanking() {
-    return this.scoresService.getGlobalRanking();
-  }
-
-  @Get('ranking/quiz-set/:quizSetId')
-  getQuizSetRanking(@Param('quizSetId') quizSetId: string) {
-    return this.scoresService.getQuizSetRanking(quizSetId);
-  }
-
-  @Get('stats/:userId')
-  getUserStats(@Param('userId') userId: string) {
-    return this.scoresService.getUserStats(userId);
-  }
-
+  // Ruta genérica al final
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.scoresService.findOne(id);

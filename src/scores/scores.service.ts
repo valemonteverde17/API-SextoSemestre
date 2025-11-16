@@ -42,7 +42,7 @@ export class ScoresService {
         },
         { new: true },
       ).populate('user_id', 'user_name role')
-       .populate('quiz_set_id', 'title')
+       .populate('quiz_set_id', 'quiz_name')
        .populate('topic_id', 'topic_name')
        .exec();
       
@@ -65,7 +65,7 @@ export class ScoresService {
     const saved = await newScore.save();
     const populated = await this.scoreModel.findById(saved._id)
       .populate('user_id', 'user_name role')
-      .populate('quiz_set_id', 'title')
+      .populate('quiz_set_id', 'quiz_name')
       .populate('topic_id', 'topic_name')
       .exec();
     
@@ -79,7 +79,7 @@ export class ScoresService {
   async findAll(): Promise<Score[]> {
     return this.scoreModel.find()
       .populate('user_id', 'user_name role')
-      .populate('quiz_set_id', 'title')
+      .populate('quiz_set_id', 'quiz_name')
       .populate('topic_id', 'topic_name')
       .sort({ score: -1, time_taken: 1 })
       .exec();
@@ -91,7 +91,7 @@ export class ScoresService {
     }
 
     return this.scoreModel.find({ user_id: new Types.ObjectId(userId) })
-      .populate('quiz_set_id', 'title')
+      .populate('quiz_set_id', 'quiz_name')
       .populate('topic_id', 'topic_name')
       .sort({ completed_at: -1 })
       .exec();
@@ -115,48 +115,78 @@ export class ScoresService {
 
     return this.scoreModel.find({ topic_id: new Types.ObjectId(topicId) })
       .populate('user_id', 'user_name role')
-      .populate('quiz_set_id', 'title')
+      .populate('quiz_set_id', 'quiz_name')
       .sort({ score: -1, time_taken: 1 })
       .exec();
   }
 
   async getGlobalRanking(): Promise<any[]> {
-    // Ranking global: suma de puntajes por usuario
-    const ranking = await this.scoreModel.aggregate([
-      {
-        $group: {
-          _id: '$user_id',
-          total_score: { $sum: '$score' },
-          quizzes_completed: { $sum: 1 },
-          average_score: { $avg: '$score' },
-          total_time: { $sum: '$time_taken' },
-        },
-      },
-      {
-        $lookup: {
-          from: 'users',
-          localField: '_id',
-          foreignField: '_id',
-          as: 'user',
-        },
-      },
-      {
-        $unwind: '$user',
-      },
-      {
-        $project: {
-          user_id: '$_id',
-          user_name: '$user.user_name',
-          total_score: 1,
-          quizzes_completed: 1,
-          average_score: { $round: ['$average_score', 2] },
-          total_time: 1,
-        },
-      },
-      {
-        $sort: { total_score: -1, average_score: -1 },
-      },
-    ]);
+    // Verificar si hay scores en la base de datos
+    const totalScores = await this.scoreModel.countDocuments();
+    //console.log('📊 Total de scores en DB:', totalScores);
+
+    if (totalScores === 0) {
+      //console.log('⚠️ No hay scores guardados aún');
+      return [];
+    }
+
+    // Obtener todos los scores con populate
+    const allScores = await this.scoreModel.find()
+      .populate('user_id', 'user_name role')
+      .exec();
+
+    //console.log('📝 Scores obtenidos:', allScores.length);
+
+    // Agrupar manualmente por usuario
+    const userScores = new Map();
+
+    for (const score of allScores) {
+      if (!score.user_id) {
+        //console.log('⚠️ Score sin user_id:', score._id);
+        continue;
+      }
+
+      const userId = score.user_id._id.toString();
+      const userName = (score.user_id as any).user_name;
+
+      if (!userScores.has(userId)) {
+        userScores.set(userId, {
+          user_id: userId,
+          user_name: userName,
+          total_score: 0,
+          quizzes_completed: 0,
+          scores: [],
+          total_time: 0,
+        });
+      }
+
+      const userData = userScores.get(userId);
+      userData.total_score += score.score;
+      userData.quizzes_completed += 1;
+      userData.scores.push(score.score);
+      userData.total_time += score.time_taken;
+    }
+
+    // Convertir a array y calcular promedios
+    const ranking = Array.from(userScores.values()).map(user => ({
+      user_id: user.user_id,
+      user_name: user.user_name,
+      total_score: user.total_score,
+      quizzes_completed: user.quizzes_completed,
+      average_score: Math.round((user.total_score / user.quizzes_completed) * 100) / 100,
+      total_time: user.total_time,
+    }));
+
+    // Ordenar por total_score descendente
+    ranking.sort((a, b) => {
+      if (b.total_score !== a.total_score) {
+        return b.total_score - a.total_score;
+      }
+      return b.average_score - a.average_score;
+    });
+
+    //console.log('🏆 Ranking generado:', ranking.length, 'usuarios');
+    //console.log('📋 Datos del ranking:', JSON.stringify(ranking, null, 2));
 
     return ranking;
   }
@@ -210,7 +240,7 @@ export class ScoresService {
 
     const score = await this.scoreModel.findById(id)
       .populate('user_id', 'user_name role')
-      .populate('quiz_set_id', 'title')
+      .populate('quiz_set_id', 'quiz_name')
       .populate('topic_id', 'topic_name')
       .exec();
 
@@ -232,7 +262,7 @@ export class ScoresService {
       { new: true },
     )
       .populate('user_id', 'user_name role')
-      .populate('quiz_set_id', 'title')
+      .populate('quiz_set_id', 'quiz_name')
       .populate('topic_id', 'topic_name')
       .exec();
 
