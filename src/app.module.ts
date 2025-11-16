@@ -5,11 +5,30 @@ import { UsersModule } from './users/users.module';
 import { TopicsModule } from './topics/topics.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { QuizModule } from './quiz/quiz.module';
+import { QuizSetModule } from './quiz-set/quiz-set.module';
 import { ResultModule } from './result/result.module';
 import { HangmanModule } from './hangman/hangman.module';
+import { ConfigModule } from '@nestjs/config';
+import { MemoramaModule } from './memorama/memorama.module';
+import { ScoresModule } from './scores/scores.module';
 
 @Module({
-  imports: [TopicsModule, UsersModule, MongooseModule.forRoot('mongodb+srv://MarioGO:ContraseñaSegura1234567@cluster0.2vqlb.mongodb.net/api-6to'), QuizModule, ResultModule, HangmanModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    TopicsModule,
+    UsersModule,
+    MongooseModule.forRootAsync({
+      useFactory: () => ({
+        uri: process.env.MONGO_URI,
+      }),
+    }),
+    QuizModule,
+    QuizSetModule,
+    ResultModule,
+    HangmanModule,
+    MemoramaModule,
+    ScoresModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

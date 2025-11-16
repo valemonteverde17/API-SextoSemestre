@@ -16,6 +16,12 @@ export class Quiz {
 
   @Prop({ type: Types.ObjectId, ref: 'Topics', required: true })
   topic_id: Types.ObjectId;
+
+  @Prop({ type: Types.ObjectId, ref: 'QuizSet', required: false })
+  quiz_set_id?: Types.ObjectId;
+
+  @Prop({ default: 0 })
+  order?: number;
 }
 
 export const QuizSchema = SchemaFactory.createForClass(Quiz);
