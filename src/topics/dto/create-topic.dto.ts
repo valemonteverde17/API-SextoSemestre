@@ -54,9 +54,9 @@ export class ContentBlockDto {
   @IsString()
   id: string;
 
-  @ApiProperty({ example: 'text', enum: ['text', 'heading', 'list', 'code', 'quote', 'code-static', 'code-live'] })
+  @ApiProperty({ example: 'text', enum: ['text', 'heading', 'list', 'quote', 'code-static', 'code-live'] })
   @IsString()
-  type: 'text' | 'heading' | 'list' | 'code' | 'quote' | 'code-static' | 'code-live';
+  type: 'text' | 'heading' | 'list' | 'quote' | 'code-static' | 'code-live';
 
   @ApiProperty({ example: 'Contenido del bloque' })
   @IsString()
@@ -72,15 +72,10 @@ export class ContentBlockDto {
   @Type(() => BlockStyleDto)
   style?: BlockStyleDto;
 
-  @ApiPropertyOptional({ example: '<div>HTML content</div>' })
+  @ApiPropertyOptional({ example: '<!DOCTYPE html>...' })
   @IsOptional()
   @IsString()
   htmlContent?: string;
-
-  @ApiPropertyOptional({ example: 'body { background: red; }' })
-  @IsOptional()
-  @IsString()
-  cssContent?: string;
 }
 
 export class CreateTopicDto {

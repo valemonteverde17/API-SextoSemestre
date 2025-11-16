@@ -17,12 +17,11 @@ export interface BlockStyle {
 
 export interface ContentBlock {
   id: string;
-  type: 'text' | 'heading' | 'list' | 'code' | 'quote' | 'code-static' | 'code-live';
+  type: 'text' | 'heading' | 'list' | 'quote' | 'code-static' | 'code-live';
   content: string;
   order: number;
   style?: BlockStyle;
   htmlContent?: string;
-  cssContent?: string;
 }
 
 @Schema({ timestamps: true })
