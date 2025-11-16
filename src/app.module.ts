@@ -10,6 +10,7 @@ import { ResultModule } from './result/result.module';
 import { HangmanModule } from './hangman/hangman.module';
 import { ConfigModule } from '@nestjs/config';
 import { MemoramaModule } from './memorama/memorama.module';
+import { ScoresModule } from './scores/scores.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { MemoramaModule } from './memorama/memorama.module';
     ResultModule,
     HangmanModule,
     MemoramaModule,
+    ScoresModule,
   ],
   controllers: [AppController],
   providers: [AppService],
