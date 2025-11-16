@@ -24,6 +24,10 @@ export class QuizService {
     return this.quizModel.find({ topic_id: topicId }).exec();
   }
 
+  async findByQuizSet(quizSetId: string): Promise<Quiz[]> {
+    return this.quizModel.find({ quiz_set_id: quizSetId }).sort({ order: 1 }).exec();
+  }
+
   async findOne(id: string): Promise<Quiz> {
     const quiz = await this.quizModel.findById(id).exec();
     if (!quiz) throw new NotFoundException(`Quiz con id ${id} no encontrado`);

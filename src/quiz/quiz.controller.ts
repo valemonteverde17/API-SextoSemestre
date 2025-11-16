@@ -24,6 +24,11 @@ export class QuizController {
     return this.quizService.findByTopic(topicId);
   }
 
+  @Get('quiz-set/:quizSetId')
+  findByQuizSet(@Param('quizSetId') quizSetId: string) {
+    return this.quizService.findByQuizSet(quizSetId);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.quizService.findOne(id);
