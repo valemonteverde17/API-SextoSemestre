@@ -14,6 +14,9 @@ export class Hangman extends Document {
 
   @Prop({ required: true })
   word: string;
+
+  @Prop({ required: false })
+  hint?: string;
 }
 
 export const HangmanSchema = SchemaFactory.createForClass(Hangman);

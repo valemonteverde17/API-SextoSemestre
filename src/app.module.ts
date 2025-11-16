@@ -9,6 +9,7 @@ import { QuizSetModule } from './quiz-set/quiz-set.module';
 import { ResultModule } from './result/result.module';
 import { HangmanModule } from './hangman/hangman.module';
 import { ConfigModule } from '@nestjs/config';
+import { MemoramaModule } from './memorama/memorama.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ConfigModule } from '@nestjs/config';
     QuizSetModule,
     ResultModule,
     HangmanModule,
+    MemoramaModule,
   ],
   controllers: [AppController],
   providers: [AppService],
