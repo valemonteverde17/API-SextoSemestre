@@ -7,9 +7,22 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { QuizModule } from './quiz/quiz.module';
 import { ResultModule } from './result/result.module';
 import { HangmanModule } from './hangman/hangman.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [TopicsModule, UsersModule, MongooseModule.forRoot('mongodb+srv://MarioGO:ContraseñaSegura1234567@cluster0.2vqlb.mongodb.net/api-6to'), QuizModule, ResultModule, HangmanModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    TopicsModule,
+    UsersModule,
+    MongooseModule.forRootAsync({
+      useFactory: () => ({
+        uri: process.env.MONGO_URI,
+      }),
+    }),
+    QuizModule,
+    ResultModule,
+    HangmanModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
