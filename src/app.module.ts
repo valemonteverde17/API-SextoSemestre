@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
@@ -11,12 +11,17 @@ import { HangmanModule } from './hangman/hangman.module';
 import { ConfigModule } from '@nestjs/config';
 import { MemoramaModule } from './memorama/memorama.module';
 import { ScoresModule } from './scores/scores.module';
+import { OrganizationModule } from './organization/organization.module';
+import { AuthModule } from './auth/auth.module';
+import { JwtMiddleware } from './common/middleware/jwt.middleware';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    AuthModule,
     TopicsModule,
     UsersModule,
+    OrganizationModule,
     MongooseModule.forRootAsync({
       useFactory: () => ({
         uri: process.env.MONGO_URI,
@@ -32,4 +37,10 @@ import { ScoresModule } from './scores/scores.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(JwtMiddleware)
+      .forRoutes('*'); // Aplicar a todas las rutas
+  }
+}

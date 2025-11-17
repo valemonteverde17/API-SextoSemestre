@@ -20,17 +20,40 @@ export class UsersService {
     }
 
     // Validar que el rol sea válido
-    if (!['docente', 'estudiante'].includes(createUserDto.role)) {
-      throw new BadRequestException('Invalid role. Must be "docente" or "estudiante"');
+    const validRoles = ['admin', 'revisor', 'docente', 'estudiante'];
+    if (!validRoles.includes(createUserDto.role)) {
+      throw new BadRequestException(`Invalid role. Must be one of: ${validRoles.join(', ')}`);
     }
 
     // Hashear la contraseña antes de guardarla
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
     
+    // Determinar el estado inicial basado en el rol
+    let initialStatus = 'active';
+    
+    // Si es docente independiente (sin organization_id), requiere aprobación
+    if (createUserDto.role === 'docente' && !createUserDto.organization_id) {
+      initialStatus = 'pending';
+    }
+    
+    // Si es admin o revisor, siempre requiere aprobación
+    if (createUserDto.role === 'admin' || createUserDto.role === 'revisor') {
+      initialStatus = 'pending';
+    }
+
     const newUser = new this.usersModel({
       user_name: createUserDto.user_name,
       password: hashedPassword,
-      role: createUserDto.role // Ahora es un string
+      email: createUserDto.email,
+      role: createUserDto.role,
+      organization_id: createUserDto.organization_id,
+      status: createUserDto.status || initialStatus,
+      profile: createUserDto.profile || {},
+      permissions: createUserDto.permissions || {
+        canReview: false,
+        canManageUsers: false
+      },
+      createdBy: createUserDto.createdBy
     });
 
     try {
@@ -99,5 +122,96 @@ export class UsersService {
     const userObject = user.toObject() as Partial<Users>;
     delete userObject.password;
     return userObject as Users;
+  }
+
+  // MÉTODOS DE APROBACIÓN
+
+  async approveUser(userId: string, approvedById: string): Promise<Users> {
+    const user = await this.usersModel.findById(userId).exec();
+    
+    if (!user) {
+      throw new NotFoundException(`User with id ${userId} not found`);
+    }
+
+    if (user.status !== 'pending') {
+      throw new BadRequestException(`User is not pending approval. Current status: ${user.status}`);
+    }
+
+    user.status = 'active';
+    user.approvedBy = approvedById as any;
+    user.approvedAt = new Date();
+
+    await user.save();
+    
+    return this.findOne(userId);
+  }
+
+  async rejectUser(userId: string, approvedById: string): Promise<Users> {
+    const user = await this.usersModel.findById(userId).exec();
+    
+    if (!user) {
+      throw new NotFoundException(`User with id ${userId} not found`);
+    }
+
+    if (user.status !== 'pending') {
+      throw new BadRequestException(`User is not pending approval. Current status: ${user.status}`);
+    }
+
+    user.status = 'rejected';
+    user.approvedBy = approvedById as any;
+    user.approvedAt = new Date();
+
+    await user.save();
+    
+    return this.findOne(userId);
+  }
+
+  async suspendUser(userId: string): Promise<Users> {
+    const user = await this.usersModel.findById(userId).exec();
+    
+    if (!user) {
+      throw new NotFoundException(`User with id ${userId} not found`);
+    }
+
+    user.status = 'suspended';
+    await user.save();
+    
+    return this.findOne(userId);
+  }
+
+  async activateUser(userId: string): Promise<Users> {
+    const user = await this.usersModel.findById(userId).exec();
+    
+    if (!user) {
+      throw new NotFoundException(`User with id ${userId} not found`);
+    }
+
+    user.status = 'active';
+    await user.save();
+    
+    return this.findOne(userId);
+  }
+
+  async findPendingUsers(): Promise<Users[]> {
+    return this.usersModel
+      .find({ status: 'pending' })
+      .select('-password')
+      .populate('organization_id', 'name code')
+      .exec();
+  }
+
+  async findByOrganization(organizationId: string): Promise<Users[]> {
+    return this.usersModel
+      .find({ organization_id: organizationId })
+      .select('-password')
+      .exec();
+  }
+
+  async findByRole(role: string): Promise<Users[]> {
+    return this.usersModel
+      .find({ role })
+      .select('-password')
+      .populate('organization_id', 'name code')
+      .exec();
   }
 }

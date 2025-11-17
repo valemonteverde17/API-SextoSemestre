@@ -1,19 +1,76 @@
-
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 
 export type UsersDocument = HydratedDocument<Users>;
+
+export interface UserProfile {
+  fullName?: string;
+  avatar?: string;
+  bio?: string;
+}
+
+export interface UserPermissions {
+  canReview: boolean;
+  canManageUsers: boolean;
+}
 
 @Schema({ timestamps: true })
 export class Users {
   @Prop({ unique: true, required: true })
   user_name: string;
 
-  @Prop({ required: true, select: false }) // select: false para que no se devuelva en consultas por defecto
+  @Prop({ required: true, select: false })
   password: string;
 
-  @Prop({ required: true, enum: ['docente', 'estudiante'] })
+  @Prop()
+  email?: string;
+
+  // ROLES: admin, revisor, docente, estudiante
+  @Prop({ 
+    required: true, 
+    enum: ['admin', 'revisor', 'docente', 'estudiante'],
+    default: 'estudiante'
+  })
   role: string;
+
+  // ORGANIZACIÓN (null si es usuario independiente)
+  @Prop({ type: Types.ObjectId, ref: 'Organization', required: false })
+  organization_id?: Types.ObjectId;
+
+  // ESTADO DEL USUARIO
+  @Prop({ 
+    required: true,
+    enum: ['active', 'pending', 'suspended', 'rejected'],
+    default: 'active'
+  })
+  status: string;
+
+  // PERFIL
+  @Prop({
+    type: Object,
+    default: {}
+  })
+  profile?: UserProfile;
+
+  // PERMISOS ESPECIALES
+  @Prop({
+    type: Object,
+    default: {
+      canReview: false,
+      canManageUsers: false
+    }
+  })
+  permissions?: UserPermissions;
+
+  // AUDITORÍA
+  @Prop({ type: Types.ObjectId, ref: 'Users', required: false })
+  createdBy?: Types.ObjectId;  // Quién creó este usuario (si fue un admin)
+
+  @Prop({ type: Types.ObjectId, ref: 'Users', required: false })
+  approvedBy?: Types.ObjectId;  // Quién aprobó este usuario
+
+  @Prop()
+  approvedAt?: Date;
 
   @Prop()
   createdAt?: Date;

@@ -42,6 +42,56 @@ export class Topics {
   @Prop({ default: '#2b9997' })
   cardColor?: string;
 
+  // AUTOR Y ORGANIZACIÓN
+  @Prop({ type: Types.ObjectId, ref: 'Users', required: true })
+  created_by: Types.ObjectId;
+
+  @Prop({ type: Types.ObjectId, ref: 'Organization', required: false })
+  organization_id?: Types.ObjectId;
+
+  // ESTADO Y APROBACIÓN
+  @Prop({ 
+    required: true,
+    enum: ['draft', 'pending_review', 'approved', 'rejected', 'archived'],
+    default: 'draft'
+  })
+  status: string;
+
+  // VISIBILIDAD
+  @Prop({ 
+    required: true,
+    enum: ['public', 'organization', 'private'],
+    default: 'public'
+  })
+  visibility: string;
+
+  // REVISIÓN
+  @Prop({ type: Types.ObjectId, ref: 'Users', required: false })
+  reviewed_by?: Types.ObjectId;
+
+  @Prop()
+  reviewed_at?: Date;
+
+  @Prop()
+  review_comments?: string;
+
+  // VERSIONES Y EDICIÓN
+  @Prop({ default: 1 })
+  version: number;
+
+  @Prop({ default: true })
+  is_editing: boolean;
+
+  // METADATA ADICIONAL
+  @Prop({ type: [String], default: [] })
+  tags?: string[];
+
+  @Prop({ enum: ['beginner', 'intermediate', 'advanced'], required: false })
+  difficulty?: string;
+
+  @Prop()
+  publishedAt?: Date;
+
   @Prop()
   createdAt?: Date;
 

@@ -1,31 +1,38 @@
-import {Controller,Get,Post,Body,Patch,Param,Delete,UsePipes,ValidationPipe,Query,NotFoundException,UnauthorizedException} from '@nestjs/common';
+import {Controller,Get,Post,Body,Patch,Param,Delete,UsePipes,ValidationPipe,Query,NotFoundException,UnauthorizedException,UseGuards,HttpCode,HttpStatus} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiTags, ApiResponse, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { UsersDocument } from './users.schema';
 import * as bcrypt from 'bcrypt';
+import { AuthGuard } from '../common/guards/auth.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Public } from '../common/decorators/public.decorator';
+import { Roles } from '../common/decorators/roles.decorator';
+import { GetUser } from '../common/decorators/get-user.decorator';
 
 @ApiTags('Users')
 @ApiBearerAuth()
 @Controller('users')
+@UseGuards(AuthGuard, RolesGuard)
 @UsePipes(new ValidationPipe({ transform: true }))
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
   
-    @Post('login')
-    @ApiOperation({ summary: 'Authenticate a user' })
-    @ApiResponse({
-      status: 200,
-      description: 'User authenticated successfully',
-      schema: {
-        example: {
-          _id: '507f1f77bcf86cd799439011',
-          user_name: 'profesor1',
-          role: 'docente'
-        }
+    @Public()
+  @Post('login')
+  @ApiOperation({ summary: 'Authenticate a user' })
+  @ApiResponse({
+    status: 200,
+    description: 'User authenticated successfully',
+    schema: {
+      example: {
+        _id: '507f1f77bcf86cd799439011',
+        user_name: 'profesor1',
+        role: 'docente'
       }
-    })
+    }
+  })
     @ApiResponse({ status: 401, description: 'Invalid password' })
     @ApiResponse({ status: 404, description: 'User not found' })
     async login(@Body() body: { user_name: string; password: string }) {
@@ -43,6 +50,7 @@ export class UsersController {
     }
   
 
+  @Public()
   @Post()
   @ApiOperation({ summary: 'Create a new user' })
   @ApiResponse({ 
@@ -63,6 +71,7 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
+  @Roles('admin', 'revisor')
   @Get()
   @ApiOperation({ summary: 'Get all users (optionally filtered by role)' })
   @ApiResponse({ 
@@ -73,6 +82,30 @@ export class UsersController {
     return this.usersService.findAll(query);
   }
 
+  @Roles('admin')
+  @Get('pending')
+  @ApiOperation({ summary: 'Get all pending users awaiting approval' })
+  @ApiResponse({ status: 200, description: 'List of pending users' })
+  findPending() {
+    return this.usersService.findPendingUsers();
+  }
+
+  @Roles('admin', 'revisor')
+  @Get('role/:role')
+  @ApiOperation({ summary: 'Get users by role' })
+  @ApiResponse({ status: 200, description: 'List of users with specified role' })
+  findByRole(@Param('role') role: string) {
+    return this.usersService.findByRole(role);
+  }
+
+  @Roles('admin')
+  @Get('organization/:organizationId')
+  @ApiOperation({ summary: 'Get users by organization' })
+  @ApiResponse({ status: 200, description: 'List of users in organization' })
+  findByOrganization(@Param('organizationId') organizationId: string) {
+    return this.usersService.findByOrganization(organizationId);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get user by ID' })
   @ApiResponse({ status: 200, description: 'User found' })
@@ -81,6 +114,7 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
 
+  @Roles('admin')
   @Patch(':id')
   @ApiOperation({ summary: 'Update user information' })
   @ApiResponse({ status: 200, description: 'User updated' })
@@ -90,6 +124,49 @@ export class UsersController {
     return this.usersService.update(id, updateUserDto);
   }
 
+  @Roles('admin')
+  @Post('approve/:id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Approve a pending user' })
+  @ApiResponse({ status: 200, description: 'User approved successfully' })
+  @ApiResponse({ status: 400, description: 'User is not pending approval' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  approveUser(@Param('id') id: string, @GetUser('_id') adminId: string) {
+    return this.usersService.approveUser(id, adminId);
+  }
+
+  @Roles('admin')
+  @Post('reject/:id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Reject a pending user' })
+  @ApiResponse({ status: 200, description: 'User rejected successfully' })
+  @ApiResponse({ status: 400, description: 'User is not pending approval' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  rejectUser(@Param('id') id: string, @GetUser('_id') adminId: string) {
+    return this.usersService.rejectUser(id, adminId);
+  }
+
+  @Roles('admin')
+  @Post('suspend/:id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Suspend a user' })
+  @ApiResponse({ status: 200, description: 'User suspended successfully' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  suspendUser(@Param('id') id: string) {
+    return this.usersService.suspendUser(id);
+  }
+
+  @Roles('admin')
+  @Post('activate/:id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Activate a suspended user' })
+  @ApiResponse({ status: 200, description: 'User activated successfully' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  activateUser(@Param('id') id: string) {
+    return this.usersService.activateUser(id);
+  }
+
+  @Roles('admin')
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a user' })
   @ApiResponse({ status: 200, description: 'User deleted' })

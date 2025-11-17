@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, MinLength, IsOptional, IsMongoId, IsArray, ValidateNested, IsObject } from 'class-validator';
+import { IsNotEmpty, IsString, MinLength, IsOptional, IsMongoId, IsArray, ValidateNested, IsObject, IsIn } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class BlockStyleDto {
@@ -127,4 +127,63 @@ export class CreateTopicDto {
   @IsOptional()
   @IsString()
   cardColor?: string;
+
+  @ApiProperty({
+    description: 'ID del usuario que crea el tema',
+    example: '507f1f77bcf86cd799439011'
+  })
+  @IsNotEmpty()
+  @IsString()
+  @IsMongoId()
+  created_by: string;
+
+  @ApiPropertyOptional({
+    description: 'ID de la organización (opcional)',
+    example: '507f1f77bcf86cd799439011'
+  })
+  @IsOptional()
+  @IsString()
+  @IsMongoId()
+  organization_id?: string;
+
+  @ApiPropertyOptional({
+    description: 'Estado del tema',
+    example: 'draft',
+    enum: ['draft', 'pending_review', 'approved', 'rejected', 'archived'],
+    default: 'draft'
+  })
+  @IsOptional()
+  @IsString()
+  @IsIn(['draft', 'pending_review', 'approved', 'rejected', 'archived'])
+  status?: string;
+
+  @ApiPropertyOptional({
+    description: 'Visibilidad del tema',
+    example: 'public',
+    enum: ['public', 'organization', 'private'],
+    default: 'public'
+  })
+  @IsOptional()
+  @IsString()
+  @IsIn(['public', 'organization', 'private'])
+  visibility?: string;
+
+  @ApiPropertyOptional({
+    description: 'Tags del tema',
+    example: ['seguridad', 'contraseñas'],
+    type: [String]
+  })
+  @IsOptional()
+  @IsArray()
+  tags?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Dificultad del tema',
+    example: 'beginner',
+    enum: ['beginner', 'intermediate', 'advanced']
+  })
+  @IsOptional()
+  @IsString()
+  @IsIn(['beginner', 'intermediate', 'advanced'])
+  difficulty?: string;
 }
