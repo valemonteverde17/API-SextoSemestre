@@ -3,11 +3,26 @@ import { HydratedDocument, Types } from 'mongoose';
 
 export type TopicsDocument = HydratedDocument<Topics>;
 
+export interface BlockStyle {
+  color?: string;
+  fontSize?: 'small' | 'medium' | 'large' | 'xlarge';
+  fontWeight?: 'normal' | 'bold';
+  fontStyle?: 'normal' | 'italic';
+  textAlign?: 'left' | 'center' | 'right' | 'justify';
+  listStyle?: 'disc' | 'circle' | 'square' | 'decimal' | 'lower-alpha' | 'upper-alpha';
+  backgroundColor?: string;
+  codeLanguage?: string;
+  codeTheme?: 'dark' | 'light';
+}
+
 export interface ContentBlock {
   id: string;
-  type: 'text' | 'heading' | 'list' | 'code' | 'quote';
+  type: 'text' | 'heading' | 'list' | 'quote' | 'code-static' | 'code-live';
   content: string;
   order: number;
+  style?: BlockStyle;
+  htmlContent?: string;
+  showCode?: boolean;
 }
 
 @Schema({ timestamps: true })
@@ -23,6 +38,9 @@ export class Topics {
 
   @Prop({ type: Types.ObjectId, ref: 'Category', required: false })
   category_id?: Types.ObjectId;
+
+  @Prop({ default: '#2b9997' })
+  cardColor?: string;
 
   @Prop()
   createdAt?: Date;
