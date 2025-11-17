@@ -1,98 +1,427 @@
+# 🎓 CiberEduca API
+
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+  <img src="https://nestjs.com/img/logo-small.svg" width="120" alt="NestJS Logo" />
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
+<p align="center">
+  API RESTful para la gestión de contenido educativo con sistema de roles y aprobación
 </p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+<p align="center">
+  <a href="#características">Características</a> •
+  <a href="#tecnologías">Tecnologías</a> •
+  <a href="#instalación">Instalación</a> •
+  <a href="#configuración">Configuración</a> •
+  <a href="#documentación">Documentación</a> •
+  <a href="#testing">Testing</a> •
+  <a href="#licencia">Licencia</a>
+</p>
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+---
 
-## Project setup
+## 📋 Descripción
+
+**CiberEduca API** es un sistema backend completo para la gestión de contenido educativo con control de acceso basado en roles (RBAC), flujos de aprobación y gestión de organizaciones educativas.
+
+### ✨ Características Principales
+
+- 🔐 **Autenticación JWT** - Sistema seguro de autenticación con tokens
+- 👥 **Sistema de Roles** - Admin, Revisor, Docente, Estudiante
+- 📝 **Gestión de Contenido** - Creación, edición y aprobación de topics educativos
+- 🏢 **Organizaciones** - Gestión de escuelas e instituciones
+- ✅ **Flujo de Aprobación** - Sistema completo de revisión y aprobación
+- 📊 **Estados de Usuario** - Active, Pending, Suspended, Rejected
+- 🔒 **Guards y Decoradores** - Protección granular de endpoints
+- 📚 **Documentación Swagger** - API completamente documentada
+- 🧪 **Testing Completo** - Guías detalladas de testing
+
+---
+
+## 🛠️ Tecnologías
+
+- **Framework**: [NestJS](https://nestjs.com/) v10.x
+- **Base de Datos**: [MongoDB](https://www.mongodb.com/) con Mongoose
+- **Autenticación**: JWT (JSON Web Tokens)
+- **Validación**: class-validator, class-transformer
+- **Documentación**: Swagger/OpenAPI
+- **Lenguaje**: TypeScript
+
+---
+
+## 🚀 Instalación
+
+### Prerrequisitos
+
+- Node.js >= 18.x
+- npm >= 9.x
+- MongoDB >= 6.x (local o cloud)
+
+### Pasos de Instalación
+
+1. **Clonar el repositorio**
 
 ```bash
-$ npm install
+git clone https://github.com/tu-usuario/cibereduca-api.git
+cd cibereduca-api
 ```
 
-## Compile and run the project
+2. **Instalar dependencias**
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
 ```
 
-## Run tests
+3. **Configurar variables de entorno**
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+cp .env.example .env
 ```
 
-## Deployment
+Edita el archivo `.env` con tus configuraciones (ver sección [Configuración](#configuración))
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+4. **Iniciar MongoDB**
 
 ```bash
-$ npm install -g mau
-$ mau deploy
+# Si usas MongoDB local
+mongod
+
+# O usa MongoDB Atlas (cloud)
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+5. **Ejecutar la aplicación**
 
-## Resources
+```bash
+# Modo desarrollo
+npm run start:dev
 
-Check out a few resources that may come in handy when working with NestJS:
+# Modo producción
+npm run build
+npm run start:prod
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+La API estará disponible en: `http://localhost:3000`
 
-## Support
+### 6. **Crear el Primer Administrador**
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Antes de usar la API, necesitas crear el primer usuario administrador:
 
-## Stay in touch
+```bash
+npm run create-admin
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Este comando creará un admin con estas credenciales:
+- **Username:** `admin`
+- **Password:** `Admin123!`
+- **Email:** `admin@cibereduca.com`
 
-## License
+**⚠️ Importante:** Cambia la contraseña después del primer login.
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+**📖 Más opciones:** Ver [CREAR_PRIMER_ADMIN.md](../CREAR_PRIMER_ADMIN.md)
+
+### 7. **Probar la API con Swagger**
+
+La API incluye documentación interactiva con Swagger UI:
+
+```
+http://localhost:3000/api
+```
+
+**📖 Guía completa:** Ver [COMO_USAR_SWAGGER.md](./COMO_USAR_SWAGGER.md)
+
+**Inicio rápido:**
+1. Abre `http://localhost:3000/api`
+2. Haz login en `POST /auth/login` con las credenciales del admin
+3. Copia el `access_token` de la respuesta
+4. Haz clic en el botón **"Authorize"** 🔓 arriba a la derecha
+5. Pega el token y haz clic en "Authorize"
+6. ¡Ahora puedes probar todos los endpoints! 🎉
+
+---
+
+## ⚙️ Configuración
+
+### Variables de Entorno
+
+Crea un archivo `.env` en la raíz del proyecto con las siguientes variables:
+
+```env
+# Servidor
+PORT=3000
+NODE_ENV=development
+
+# Base de Datos
+MONGO_URI=mongodb://localhost:27017/cibereduca
+
+# JWT
+JWT_SECRET=tu_clave_secreta_super_segura_cambiala_en_produccion
+JWT_EXPIRES_IN=24h
+
+# CORS
+CORS_ORIGIN=http://localhost:5173
+```
+
+#### 📝 Descripción de Variables
+
+| Variable | Descripción | Ejemplo | Requerido |
+|----------|-------------|---------|-----------|
+| `PORT` | Puerto del servidor | `3000` | No (default: 3000) |
+| `NODE_ENV` | Entorno de ejecución | `development`, `production` | No |
+| `MONGO_URI` | URI de conexión a MongoDB | `mongodb://localhost:27017/cibereduca` | **Sí** |
+| `JWT_SECRET` | Clave secreta para JWT | `mi_clave_super_secreta_123` | **Sí** |
+| `JWT_EXPIRES_IN` | Tiempo de expiración del token | `24h`, `7d`, `30d` | No (default: 24h) |
+| `CORS_ORIGIN` | Origen permitido para CORS | `http://localhost:5173` | No |
+
+### 🔒 Seguridad en Producción
+
+**⚠️ IMPORTANTE**: Antes de desplegar en producción:
+
+1. **Cambia `JWT_SECRET`** a una clave aleatoria y segura:
+   ```bash
+   # Generar clave segura
+   node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+   ```
+
+2. **Usa variables de entorno del sistema** (no archivos `.env`)
+
+3. **Configura CORS** apropiadamente para tu dominio
+
+4. **Usa HTTPS** en producción
+
+5. **Configura MongoDB** con autenticación y SSL
+
+---
+
+## 📚 Documentación
+
+### Swagger UI
+
+Una vez que el servidor esté corriendo, accede a la documentación interactiva:
+
+```
+http://localhost:3000/api
+```
+
+La documentación Swagger incluye:
+- ✅ Todos los endpoints disponibles
+- ✅ Esquemas de request/response
+- ✅ Ejemplos de uso
+- ✅ Autenticación JWT integrada
+- ✅ Prueba de endpoints en vivo
+
+### Estructura del Proyecto
+
+```
+src/
+├── auth/                 # Módulo de autenticación
+│   ├── auth.controller.ts
+│   ├── auth.service.ts
+│   ├── auth.module.ts
+│   └── dto/
+├── users/                # Módulo de usuarios
+│   ├── users.controller.ts
+│   ├── users.service.ts
+│   ├── users.schema.ts
+│   └── dto/
+├── topics/               # Módulo de contenido educativo
+│   ├── topics.controller.ts
+│   ├── topics.service.ts
+│   ├── topics.schema.ts
+│   └── dto/
+├── organization/         # Módulo de organizaciones
+│   ├── organization.controller.ts
+│   ├── organization.service.ts
+│   └── organization.schema.ts
+├── common/               # Recursos compartidos
+│   ├── guards/          # Guards de autenticación y autorización
+│   ├── decorators/      # Decoradores personalizados
+│   ├── middleware/      # Middleware JWT
+│   └── services/        # Servicios compartidos
+└── app.module.ts         # Módulo principal
+```
+
+---
+
+## 👥 Sistema de Roles
+
+### Roles Disponibles
+
+| Rol | Permisos | Descripción |
+|-----|----------|-------------|
+| **admin** | Control total | Gestiona usuarios, organizaciones y contenido |
+| **revisor** | Revisión de contenido | Aprueba/rechaza topics educativos |
+| **docente** | Creación de contenido | Crea y gestiona topics |
+| **estudiante** | Consumo de contenido | Accede a contenido aprobado |
+
+### Flujo de Aprobación de Usuarios
+
+```
+Registro → Estado Inicial
+│
+├─ Estudiante → active (automático)
+│
+├─ Docente (sin org) → pending → Admin aprueba → active
+│
+└─ Docente (con org) → active (si lo crea admin)
+```
+
+### Flujo de Aprobación de Contenido
+
+```
+Draft → Pending Review → Aprobado/Rechazado/Cambios Solicitados
+  ↑                              │
+  └──────────────────────────────┘
+         (si se solicitan cambios)
+```
+
+---
+
+## 🧪 Testing
+
+### Guías de Testing Disponibles
+
+El proyecto incluye guías completas de testing con Postman:
+
+1. **[TESTING_1_SETUP_INICIAL.md](../TESTING_1_SETUP_INICIAL.md)** - Configuración inicial
+2. **[TESTING_2_CREAR_ADMIN.md](../TESTING_2_CREAR_ADMIN.md)** - Crear usuario administrador
+3. **[TESTING_3_AUTENTICACION.md](../TESTING_3_AUTENTICACION.md)** - Testing de autenticación
+4. **[TESTING_4_USUARIOS.md](../TESTING_4_USUARIOS.md)** - Gestión de usuarios
+5. **[TESTING_5_ORGANIZACIONES.md](../TESTING_5_ORGANIZACIONES.md)** - Gestión de organizaciones
+6. **[TESTING_6_TOPICS.md](../TESTING_6_TOPICS.md)** - Gestión de contenido
+7. **[TESTING_7_FLUJOS_COMPLETOS.md](../TESTING_7_FLUJOS_COMPLETOS.md)** - Escenarios completos
+
+### Ejecutar Tests
+
+```bash
+# Unit tests
+npm run test
+
+# E2E tests
+npm run test:e2e
+
+# Test coverage
+npm run test:cov
+```
+
+---
+
+## 🔑 Endpoints Principales
+
+### Autenticación
+
+| Método | Endpoint | Descripción | Auth |
+|--------|----------|-------------|------|
+| POST | `/auth/register` | Registrar usuario | No |
+| POST | `/auth/login` | Iniciar sesión | No |
+| GET | `/auth/profile` | Obtener perfil | Sí |
+| POST | `/auth/verify` | Verificar token | Sí |
+
+### Usuarios
+
+| Método | Endpoint | Descripción | Rol Requerido |
+|--------|----------|-------------|---------------|
+| GET | `/users` | Listar usuarios | Admin/Revisor |
+| GET | `/users/:id` | Obtener usuario | Autenticado |
+| POST | `/users/approve/:id` | Aprobar usuario | Admin |
+| POST | `/users/reject/:id` | Rechazar usuario | Admin |
+| POST | `/users/suspend/:id` | Suspender usuario | Admin |
+
+### Topics
+
+| Método | Endpoint | Descripción | Rol Requerido |
+|--------|----------|-------------|---------------|
+| GET | `/topics` | Listar topics | Público |
+| POST | `/topics` | Crear topic | Docente |
+| POST | `/topics/:id/submit-review` | Enviar a revisión | Docente |
+| POST | `/topics/:id/approve` | Aprobar topic | Admin/Revisor |
+| POST | `/topics/:id/reject` | Rechazar topic | Admin/Revisor |
+
+### Organizaciones
+
+| Método | Endpoint | Descripción | Rol Requerido |
+|--------|----------|-------------|---------------|
+| GET | `/organizations` | Listar organizaciones | Admin |
+| POST | `/organizations` | Crear organización | Admin |
+| GET | `/organizations/:id` | Obtener organización | Admin |
+| PATCH | `/organizations/:id` | Actualizar organización | Admin |
+
+---
+
+## 🚀 Despliegue
+
+### Preparación para Producción
+
+1. **Build del proyecto**
+```bash
+npm run build
+```
+
+2. **Variables de entorno**
+```bash
+# Configura las variables en tu servidor
+export NODE_ENV=production
+export MONGO_URI=mongodb+srv://user:pass@cluster.mongodb.net/dbname
+export JWT_SECRET=clave_super_segura_generada_aleatoriamente
+```
+
+3. **Ejecutar en producción**
+```bash
+npm run start:prod
+```
+
+### Opciones de Despliegue
+
+- **Heroku**: [Guía de despliegue](https://docs.nestjs.com/deployment)
+- **AWS**: EC2, Elastic Beanstalk, o Lambda
+- **DigitalOcean**: App Platform o Droplets
+- **Vercel/Netlify**: Para APIs serverless
+- **Docker**: Incluye `Dockerfile` para containerización
+
+---
+
+## 🤝 Contribuir
+
+Este proyecto es open source y está disponible para la comunidad educativa.
+
+### Cómo Contribuir
+
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+### Guías de Estilo
+
+- Usa TypeScript
+- Sigue las convenciones de NestJS
+- Documenta con decoradores de Swagger
+- Escribe tests para nuevas features
+
+---
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
+
+---
+
+## 📧 Soporte
+
+- **Documentación**: [http://localhost:3000/api](http://localhost:3000/api)
+- **Issues**: [GitHub Issues](https://github.com/tu-usuario/cibereduca-api/issues)
+- **Email**: soporte@cibereduca.com
+
+---
+
+## 🙏 Agradecimientos
+
+- [NestJS](https://nestjs.com/) - Framework principal
+- [MongoDB](https://www.mongodb.com/) - Base de datos
+- Comunidad open source
+
+---
+
+<p align="center">
+  Hecho con ❤️ para la educación
+</p>

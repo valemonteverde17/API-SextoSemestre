@@ -1,4 +1,5 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
 
@@ -8,6 +9,8 @@ import * as jwt from 'jsonwebtoken';
  */
 @Injectable()
 export class JwtMiddleware implements NestMiddleware {
+  constructor(private configService: ConfigService) {}
+
   use(req: Request, res: Response, next: NextFunction) {
     // Extraer token del header Authorization
     const authHeader = req.headers.authorization;
@@ -17,7 +20,7 @@ export class JwtMiddleware implements NestMiddleware {
       
       try {
         // Verificar y decodificar el token
-        const secret = process.env.JWT_SECRET || 'cibereduca-secret-key-2024';
+        const secret = this.configService.get<string>('JWT_SECRET') || 'cibereduca-secret-key-2024';
         const decoded = jwt.verify(token, secret);
         
         // Agregar usuario a la request
