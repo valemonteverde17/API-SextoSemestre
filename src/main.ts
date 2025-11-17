@@ -76,20 +76,9 @@ Las organizaciones permiten agrupar usuarios y contenido:
 ## 🔗 Enlaces Útiles
 
 - [Repositorio GitHub](https://github.com/valemonteverde17/API-SextoSemestre)
-- [Documentación Completa](./README.md)
-- [Guías de Testing](./TESTING_1_SETUP_INICIAL.md)
-
-## 📧 Soporte
-
-Para soporte técnico o preguntas, contacta al equipo de desarrollo.
-      `,
+- [Documentación Completa](./README.md)`,
     )
     .setVersion('1.0.0')
-    .setContact(
-      'Equipo CiberEduca',
-      'https://github.com/valemonteverde17/API-SextoSemestre',
-      'soporte@cibereduca.com',
-    )
     .setLicense('MIT', 'https://opensource.org/licenses/MIT')
     .addBearerAuth(
       {
@@ -106,7 +95,11 @@ Para soporte técnico o preguntas, contacta al equipo de desarrollo.
     .addTag('Users', 'Gestión de usuarios del sistema')
     .addTag('Organizations', 'Gestión de organizaciones/escuelas')
     .addTag('Topics', 'Gestión de contenido educativo')
-    .addTag('Categories', 'Categorías de contenido')
+    .addTag('Quizzes', 'Sistema de evaluación con preguntas y respuestas')
+    .addTag('Quiz-Sets', 'Conjuntos de quizzes agrupados por tema')
+    .addTag('Scores', 'Puntuaciones y rankings de usuarios')
+    .addTag('Resultados', 'Resultados de quizzes completados')
+    .addTag('Juegos', 'Juegos educativos (Ahorcado y Memorama)')
     .addServer('http://localhost:3000', 'Servidor de Desarrollo')
     .addServer('https://api.cibereduca.com', 'Servidor de Producción')
     .build();
@@ -138,10 +131,10 @@ Para soporte técnico o preguntas, contacta al equipo de desarrollo.
   console.log(`
   ╔═══════════════════════════════════════════════════════════╗
   ║                                                           ║
-  ║   🎓 CiberEduca API - Sistema de Gestión Educativa       ║
+  ║   🎓 CiberEduca API - Sistema de Gestión Educativa        ║
   ║                                                           ║
-  ║   🚀 Servidor corriendo en: http://localhost:${port}        ║
-  ║   📚 Documentación Swagger: http://localhost:${port}/api    ║
+  ║   🚀 Servidor corriendo en: http://localhost:${port}         ║
+  ║   📚 Documentación Swagger: http://localhost:${port}/api     ║
   ║                                                           ║
   ║   Versión: 1.0.0                                          ║
   ║   Entorno: ${process.env.NODE_ENV || 'development'}                                    ║

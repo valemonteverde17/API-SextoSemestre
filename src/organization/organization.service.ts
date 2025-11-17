@@ -1,14 +1,16 @@
-import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, BadRequestException, Inject, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { Organization, OrganizationDocument } from './organization.schema';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class OrganizationService {
   constructor(
     @InjectModel(Organization.name) private organizationModel: Model<OrganizationDocument>,
+    @Inject(forwardRef(() => UsersService)) private usersService: UsersService,
   ) {}
 
   async create(createOrganizationDto: CreateOrganizationDto): Promise<Organization> {
@@ -110,12 +112,23 @@ export class OrganizationService {
   }
 
   async getMemberCount(organizationId: string): Promise<{ students: number; teachers: number; total: number }> {
-    // Este método se implementará cuando actualicemos el Users service
-    // Por ahora retorna valores por defecto
-    return {
-      students: 0,
-      teachers: 0,
-      total: 0
-    };
+    try {
+      const users = await this.usersService.findByOrganization(organizationId);
+      const students = users.filter(u => u.role === 'estudiante').length;
+      const teachers = users.filter(u => u.role === 'docente').length;
+      
+      return {
+        students,
+        teachers,
+        total: students + teachers
+      };
+    } catch (error) {
+      // Si hay error, retornar 0
+      return {
+        students: 0,
+        teachers: 0,
+        total: 0
+      };
+    }
   }
 }

@@ -117,7 +117,6 @@ Este comando creará un admin con estas credenciales:
 
 **⚠️ Importante:** Cambia la contraseña después del primer login.
 
-**📖 Más opciones:** Ver [CREAR_PRIMER_ADMIN.md](../CREAR_PRIMER_ADMIN.md)
 
 ### 7. **Probar la API con Swagger**
 
@@ -274,36 +273,7 @@ Draft → Pending Review → Aprobado/Rechazado/Cambios Solicitados
          (si se solicitan cambios)
 ```
 
----
 
-## 🧪 Testing
-
-### Guías de Testing Disponibles
-
-El proyecto incluye guías completas de testing con Postman:
-
-1. **[TESTING_1_SETUP_INICIAL.md](../TESTING_1_SETUP_INICIAL.md)** - Configuración inicial
-2. **[TESTING_2_CREAR_ADMIN.md](../TESTING_2_CREAR_ADMIN.md)** - Crear usuario administrador
-3. **[TESTING_3_AUTENTICACION.md](../TESTING_3_AUTENTICACION.md)** - Testing de autenticación
-4. **[TESTING_4_USUARIOS.md](../TESTING_4_USUARIOS.md)** - Gestión de usuarios
-5. **[TESTING_5_ORGANIZACIONES.md](../TESTING_5_ORGANIZACIONES.md)** - Gestión de organizaciones
-6. **[TESTING_6_TOPICS.md](../TESTING_6_TOPICS.md)** - Gestión de contenido
-7. **[TESTING_7_FLUJOS_COMPLETOS.md](../TESTING_7_FLUJOS_COMPLETOS.md)** - Escenarios completos
-
-### Ejecutar Tests
-
-```bash
-# Unit tests
-npm run test
-
-# E2E tests
-npm run test:e2e
-
-# Test coverage
-npm run test:cov
-```
-
----
 
 ## 🔑 Endpoints Principales
 
@@ -368,36 +338,6 @@ export JWT_SECRET=clave_super_segura_generada_aleatoriamente
 ```bash
 npm run start:prod
 ```
-
-### Opciones de Despliegue
-
-- **Heroku**: [Guía de despliegue](https://docs.nestjs.com/deployment)
-- **AWS**: EC2, Elastic Beanstalk, o Lambda
-- **DigitalOcean**: App Platform o Droplets
-- **Vercel/Netlify**: Para APIs serverless
-- **Docker**: Incluye `Dockerfile` para containerización
-
----
-
-## 🤝 Contribuir
-
-Este proyecto es open source y está disponible para la comunidad educativa.
-
-### Cómo Contribuir
-
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
-### Guías de Estilo
-
-- Usa TypeScript
-- Sigue las convenciones de NestJS
-- Documenta con decoradores de Swagger
-- Escribe tests para nuevas features
-
 ---
 
 ## 📄 Licencia
@@ -418,7 +358,7 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
 
 - [NestJS](https://nestjs.com/) - Framework principal
 - [MongoDB](https://www.mongodb.com/) - Base de datos
-- Comunidad open source
+- Proyecto Universitario Educativo
 
 ---
 

@@ -26,16 +26,29 @@ export class OrganizationController {
     type: CreateOrganizationDto,
     examples: {
       ejemplo1: {
+        summary: 'Escuela Primaria',
+        value: {
+          name: 'Escuela Primaria Benito Juárez',
+          code: 'EPB001',
+          admin_id: '673abc123def456789012345',
+          description: 'Escuela primaria pública ubicada en el centro de la ciudad',
+          logo: 'https://example.com/logo-benito-juarez.png',
+          settings: {
+            allowPublicContent: true,
+            requireApproval: true
+          }
+        }
+      },
+      ejemplo2: {
         summary: 'Escuela Secundaria',
         value: {
-          name: 'Escuela Secundaria Federal No. 5',
-          code: 'ESF005',
-          description: 'Escuela secundaria pública en la Ciudad de México',
-          type: 'secondary_school',
-          contact: {
-            email: 'contacto@esf005.edu.mx',
-            phone: '+52 55 1234 5678',
-            address: 'Av. Insurgentes Sur 1234, CDMX'
+          name: 'Colegio Secundaria Miguel Hidalgo',
+          code: 'CSMH002',
+          admin_id: '673abc123def456789012345',
+          description: 'Colegio de educación secundaria',
+          settings: {
+            allowPublicContent: false,
+            requireApproval: true
           }
         }
       }
@@ -47,16 +60,15 @@ export class OrganizationController {
     schema: {
       example: {
         _id: '673org123def456789012345',
-        name: 'Escuela Secundaria Federal No. 5',
-        code: 'ESF005',
-        description: 'Escuela secundaria pública en la Ciudad de México',
-        type: 'secondary_school',
-        contact: {
-          email: 'contacto@esf005.edu.mx',
-          phone: '+52 55 1234 5678',
-          address: 'Av. Insurgentes Sur 1234, CDMX'
+        name: 'Escuela Primaria Benito Juárez',
+        code: 'EPB001',
+        admin_id: '673abc123def456789012345',
+        description: 'Escuela primaria pública ubicada en el centro de la ciudad',
+        logo: 'https://example.com/logo-benito-juarez.png',
+        settings: {
+          allowPublicContent: true,
+          requireApproval: true
         },
-        memberCount: 0,
         createdAt: '2024-11-16T10:00:00.000Z',
         updatedAt: '2024-11-16T10:00:00.000Z'
       }
@@ -83,19 +95,37 @@ export class OrganizationController {
       example: [
         {
           _id: '673org123def456789012345',
-          name: 'Escuela Secundaria Federal No. 5',
-          code: 'ESF005',
-          type: 'secondary_school',
-          memberCount: 45,
-          createdAt: '2024-11-10T10:00:00.000Z'
+          name: 'Escuela Primaria Benito Juárez',
+          code: 'EPB001',
+          admin_id: {
+            _id: '673abc123def456789012345',
+            user_name: 'admin',
+            role: 'admin'
+          },
+          description: 'Escuela primaria pública ubicada en el centro de la ciudad',
+          settings: {
+            allowPublicContent: true,
+            requireApproval: true
+          },
+          createdAt: '2024-11-10T10:00:00.000Z',
+          updatedAt: '2024-11-10T10:00:00.000Z'
         },
         {
           _id: '673org456def789012345678',
-          name: 'Instituto Tecnológico Superior',
-          code: 'ITS2024',
-          type: 'university',
-          memberCount: 120,
-          createdAt: '2024-11-05T08:00:00.000Z'
+          name: 'Colegio Secundaria Miguel Hidalgo',
+          code: 'CSMH002',
+          admin_id: {
+            _id: '673abc123def456789012345',
+            user_name: 'admin',
+            role: 'admin'
+          },
+          description: 'Colegio de educación secundaria',
+          settings: {
+            allowPublicContent: false,
+            requireApproval: true
+          },
+          createdAt: '2024-11-05T08:00:00.000Z',
+          updatedAt: '2024-11-05T08:00:00.000Z'
         }
       ]
     }
@@ -122,18 +152,19 @@ export class OrganizationController {
     schema: {
       example: {
         _id: '673org123def456789012345',
-        name: 'Escuela Secundaria Federal No. 5',
-        code: 'ESF005',
-        description: 'Escuela secundaria pública en la Ciudad de México',
-        type: 'secondary_school',
-        contact: {
-          email: 'contacto@esf005.edu.mx',
-          phone: '+52 55 1234 5678',
-          address: 'Av. Insurgentes Sur 1234, CDMX',
-          website: 'https://esf005.edu.mx'
+        name: 'Escuela Primaria Benito Juárez',
+        code: 'EPB001',
+        admin_id: {
+          _id: '673abc123def456789012345',
+          user_name: 'admin',
+          role: 'admin'
         },
-        memberCount: 45,
-        admins: ['673admin123def456789012345'],
+        description: 'Escuela primaria pública ubicada en el centro de la ciudad',
+        logo: 'https://example.com/logo-benito-juarez.png',
+        settings: {
+          allowPublicContent: true,
+          requireApproval: true
+        },
         createdAt: '2024-11-10T10:00:00.000Z',
         updatedAt: '2024-11-16T08:00:00.000Z'
       }
@@ -153,7 +184,7 @@ export class OrganizationController {
   @ApiParam({ 
     name: 'code', 
     description: 'Código único de la organización',
-    example: 'ESF005'
+    example: 'EPB001'
   })
   @ApiResponse({ 
     status: 200, 
@@ -161,13 +192,17 @@ export class OrganizationController {
     schema: {
       example: {
         _id: '673org123def456789012345',
-        name: 'Escuela Secundaria Federal No. 5',
-        code: 'ESF005',
-        description: 'Escuela secundaria pública en la Ciudad de México',
-        type: 'secondary_school',
-        memberCount: 45,
-        contact: {
-          email: 'contacto@esf005.edu.mx'
+        name: 'Escuela Primaria Benito Juárez',
+        code: 'EPB001',
+        admin_id: {
+          _id: '673abc123def456789012345',
+          user_name: 'admin',
+          role: 'admin'
+        },
+        description: 'Escuela primaria pública ubicada en el centro de la ciudad',
+        settings: {
+          allowPublicContent: true,
+          requireApproval: true
         }
       }
     }
@@ -194,15 +229,25 @@ export class OrganizationController {
       example: [
         {
           _id: '673org123def456789012345',
-          name: 'Escuela Secundaria Federal No. 5',
-          code: 'ESF005',
-          memberCount: 45
+          name: 'Escuela Primaria Benito Juárez',
+          code: 'EPB001',
+          admin_id: '673abc123def456789012345',
+          settings: {
+            allowPublicContent: true,
+            requireApproval: true
+          },
+          createdAt: '2024-11-10T10:00:00.000Z'
         },
         {
           _id: '673org456def789012345678',
-          name: 'Instituto Tecnológico',
-          code: 'ITS2024',
-          memberCount: 120
+          name: 'Colegio Secundaria Miguel Hidalgo',
+          code: 'CSMH002',
+          admin_id: '673abc123def456789012345',
+          settings: {
+            allowPublicContent: false,
+            requireApproval: true
+          },
+          createdAt: '2024-11-05T08:00:00.000Z'
         }
       ]
     }
@@ -229,23 +274,18 @@ export class OrganizationController {
     schema: {
       example: {
         organizationId: '673org123def456789012345',
-        organizationName: 'Escuela Secundaria Federal No. 5',
-        totalMembers: 45,
-        byRole: {
-          docente: 12,
-          estudiante: 33
-        },
-        byStatus: {
-          active: 42,
-          pending: 3
-        }
+        memberCount: 45
       }
     }
   })
   @ApiResponse({ status: 404, description: 'Organización no encontrada' })
   @ApiResponse({ status: 401, description: 'No autenticado' })
-  getMemberCount(@Param('id') id: string) {
-    return this.organizationService.getMemberCount(id);
+  async getMemberCount(@Param('id') id: string) {
+    const count = await this.organizationService.getMemberCount(id);
+    return {
+      organizationId: id,
+      memberCount: count.total
+    };
   }
 
   @Roles('admin')
@@ -264,13 +304,18 @@ export class OrganizationController {
     type: UpdateOrganizationDto,
     examples: {
       ejemplo1: {
-        summary: 'Actualizar información de contacto',
+        summary: 'Actualizar descripción y logo',
         value: {
-          description: 'Descripción actualizada de la escuela',
-          contact: {
-            email: 'nuevo_contacto@esf005.edu.mx',
-            phone: '+52 55 9876 5432',
-            website: 'https://esf005.edu.mx'
+          description: 'Escuela primaria pública con enfoque en tecnología educativa',
+          logo: 'https://example.com/new-logo.png'
+        }
+      },
+      ejemplo2: {
+        summary: 'Actualizar settings',
+        value: {
+          settings: {
+            allowPublicContent: true,
+            requireApproval: false
           }
         }
       }
@@ -282,14 +327,20 @@ export class OrganizationController {
     schema: {
       example: {
         _id: '673org123def456789012345',
-        name: 'Escuela Secundaria Federal No. 5',
-        code: 'ESF005',
-        description: 'Descripción actualizada de la escuela',
-        contact: {
-          email: 'nuevo_contacto@esf005.edu.mx',
-          phone: '+52 55 9876 5432',
-          website: 'https://esf005.edu.mx'
+        name: 'Escuela Primaria Benito Juárez',
+        code: 'EPB001',
+        admin_id: {
+          _id: '673abc123def456789012345',
+          user_name: 'admin',
+          role: 'admin'
         },
+        description: 'Escuela primaria pública con enfoque en tecnología educativa',
+        logo: 'https://example.com/new-logo.png',
+        settings: {
+          allowPublicContent: true,
+          requireApproval: false
+        },
+        createdAt: '2024-11-10T10:00:00.000Z',
         updatedAt: '2024-11-16T16:00:00.000Z'
       }
     }

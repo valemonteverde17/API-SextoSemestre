@@ -33,30 +33,50 @@ export class TopicsController {
     type: CreateTopicDto,
     examples: {
       ejemplo1: {
-        summary: 'Topic de Matemáticas',
+        summary: 'Topic Básico (Mínimo)',
         value: {
-          topic_name: 'Introducción al Álgebra',
-          description: 'Conceptos básicos de álgebra para principiantes',
-          category: 'Matemáticas',
-          difficulty: 'beginner',
+          topic_name: 'introduccion-ciberseguridad',
+          description: 'Aprende los conceptos básicos de ciberseguridad y cómo proteger tu información en línea',
+          created_by: '673abc123def456789012345',
+          cardColor: '#2b9997',
           visibility: 'public',
+          difficulty: 'beginner',
+          tags: ['seguridad', 'ciberseguridad', 'principiantes']
+        }
+      },
+      ejemplo2: {
+        summary: 'Topic con Contenido Completo',
+        value: {
+          topic_name: 'algebra-basica',
+          description: 'Conceptos fundamentales de álgebra para estudiantes de secundaria',
+          created_by: '673abc123def456789012345',
+          category_id: '673cat123def456789012345',
+          organization_id: '673org123def456789012345',
+          cardColor: '#4a90e2',
+          visibility: 'organization',
+          status: 'draft',
+          difficulty: 'intermediate',
+          tags: ['matemáticas', 'álgebra'],
           content: [
             {
+              id: '1',
               type: 'heading',
               content: '¿Qué es el Álgebra?',
               order: 0,
               style: { fontSize: 'large', fontWeight: 'bold' }
             },
             {
-              type: 'paragraph',
-              content: 'El álgebra es una rama de las matemáticas que utiliza letras y símbolos para representar números y cantidades.',
+              id: '2',
+              type: 'text',
+              content: 'El álgebra es una rama de las matemáticas que utiliza letras y símbolos para representar números.',
               order: 1
             },
             {
-              type: 'code',
+              id: '3',
+              type: 'code-static',
               content: 'x + 5 = 10\nx = 10 - 5\nx = 5',
               order: 2,
-              style: { codeLanguage: 'text', codeTheme: 'dark' }
+              style: { codeLanguage: 'javascript', codeTheme: 'dark' }
             }
           ]
         }
@@ -69,20 +89,23 @@ export class TopicsController {
     schema: {
       example: {
         _id: '673abc123def456789012345',
-        topic_name: 'Introducción al Álgebra',
-        description: 'Conceptos básicos de álgebra para principiantes',
-        category: 'Matemáticas',
-        difficulty: 'beginner',
-        visibility: 'public',
+        topic_name: 'introduccion-ciberseguridad',
+        description: 'Aprende los conceptos básicos de ciberseguridad y cómo proteger tu información en línea',
+        created_by: {
+          _id: '673user123def456789012345',
+          user_name: 'profesor1',
+          role: 'docente'
+        },
+        organization_id: null,
+        category_id: null,
+        cardColor: '#2b9997',
         status: 'draft',
-        created_by: '673user123def456789012345',
-        content: [
-          {
-            type: 'heading',
-            content: '¿Qué es el Álgebra?',
-            order: 0
-          }
-        ],
+        visibility: 'public',
+        difficulty: 'beginner',
+        tags: ['seguridad', 'ciberseguridad', 'principiantes'],
+        content: [],
+        version: 1,
+        is_editing: true,
         createdAt: '2024-11-16T10:00:00.000Z',
         updatedAt: '2024-11-16T10:00:00.000Z'
       }
@@ -109,29 +132,46 @@ export class TopicsController {
       example: [
         {
           _id: '673abc123def456789012345',
-          topic_name: 'Introducción al Álgebra',
-          description: 'Conceptos básicos de álgebra',
-          category: 'Matemáticas',
-          difficulty: 'beginner',
-          visibility: 'public',
-          status: 'approved',
+          topic_name: 'introduccion-ciberseguridad',
+          description: 'Aprende los conceptos básicos de ciberseguridad',
           created_by: {
             _id: '673user123def456789012345',
             user_name: 'profesor1',
-            profile: { fullName: 'Juan Pérez' }
+            role: 'docente'
           },
-          approvedAt: '2024-11-15T14:00:00.000Z',
-          createdAt: '2024-11-14T10:00:00.000Z'
+          organization_id: null,
+          category_id: null,
+          cardColor: '#2b9997',
+          status: 'approved',
+          visibility: 'public',
+          difficulty: 'beginner',
+          tags: ['seguridad', 'ciberseguridad'],
+          reviewed_by: {
+            _id: '673admin123def456789012345',
+            user_name: 'admin'
+          },
+          reviewed_at: '2024-11-15T14:00:00.000Z',
+          publishedAt: '2024-11-15T14:00:00.000Z',
+          createdAt: '2024-11-14T10:00:00.000Z',
+          updatedAt: '2024-11-15T14:00:00.000Z'
         },
         {
           _id: '673abc456def789012345678',
-          topic_name: 'Historia de México',
-          description: 'Eventos importantes de la historia mexicana',
-          category: 'Historia',
-          difficulty: 'intermediate',
-          visibility: 'public',
+          topic_name: 'algebra-basica',
+          description: 'Conceptos fundamentales de álgebra para estudiantes',
+          created_by: {
+            _id: '673user456def789012345678',
+            user_name: 'profesor2',
+            role: 'docente'
+          },
+          cardColor: '#4a90e2',
           status: 'approved',
-          createdAt: '2024-11-13T08:00:00.000Z'
+          visibility: 'public',
+          difficulty: 'intermediate',
+          tags: ['matemáticas', 'álgebra'],
+          publishedAt: '2024-11-13T10:00:00.000Z',
+          createdAt: '2024-11-13T08:00:00.000Z',
+          updatedAt: '2024-11-13T10:00:00.000Z'
         }
       ]
     }
@@ -161,24 +201,38 @@ export class TopicsController {
       example: [
         {
           _id: '673abc123def456789012345',
-          topic_name: 'Mi Topic de Matemáticas',
-          description: 'Topic en borrador',
-          category: 'Matemáticas',
+          topic_name: 'mi-topic-matematicas',
+          description: 'Topic en borrador sobre ecuaciones',
+          created_by: '673user123def456789012345',
+          category_id: null,
+          organization_id: null,
+          cardColor: '#2b9997',
           status: 'draft',
           visibility: 'public',
-          created_by: '673user123def456789012345',
-          createdAt: '2024-11-16T10:00:00.000Z'
+          difficulty: 'beginner',
+          tags: ['matemáticas', 'álgebra'],
+          version: 1,
+          is_editing: true,
+          createdAt: '2024-11-16T10:00:00.000Z',
+          updatedAt: '2024-11-16T10:00:00.000Z'
         },
         {
           _id: '673abc456def789012345678',
-          topic_name: 'Topic Aprobado',
-          description: 'Topic ya aprobado',
-          category: 'Ciencias',
+          topic_name: 'topic-aprobado-ciencias',
+          description: 'Topic ya aprobado sobre física',
+          created_by: '673user123def456789012345',
+          cardColor: '#4a90e2',
           status: 'approved',
           visibility: 'public',
-          approvedBy: '673admin123def456789012345',
-          approvedAt: '2024-11-15T14:00:00.000Z',
-          createdAt: '2024-11-14T08:00:00.000Z'
+          difficulty: 'intermediate',
+          tags: ['ciencias', 'física'],
+          reviewed_by: '673admin123def456789012345',
+          reviewed_at: '2024-11-15T14:00:00.000Z',
+          publishedAt: '2024-11-15T14:00:00.000Z',
+          version: 1,
+          is_editing: false,
+          createdAt: '2024-11-14T08:00:00.000Z',
+          updatedAt: '2024-11-15T14:00:00.000Z'
         }
       ]
     }
@@ -202,17 +256,23 @@ export class TopicsController {
       example: [
         {
           _id: '673abc123def456789012345',
-          topic_name: 'Nuevo Topic de Física',
-          description: 'Leyes de Newton',
-          category: 'Física',
-          status: 'pending_review',
+          topic_name: 'nuevo-topic-fisica',
+          description: 'Leyes de Newton y sus aplicaciones',
           created_by: {
             _id: '673user123def456789012345',
             user_name: 'profesor1',
-            profile: { fullName: 'Juan Pérez' }
+            role: 'docente'
           },
-          submittedAt: '2024-11-16T10:00:00.000Z',
-          createdAt: '2024-11-15T08:00:00.000Z'
+          category_id: '673cat123def456789012345',
+          organization_id: '673org123def456789012345',
+          cardColor: '#e74c3c',
+          status: 'pending_review',
+          visibility: 'organization',
+          difficulty: 'intermediate',
+          tags: ['física', 'mecánica', 'newton'],
+          version: 1,
+          createdAt: '2024-11-15T08:00:00.000Z',
+          updatedAt: '2024-11-16T10:00:00.000Z'
         }
       ]
     }
@@ -282,38 +342,51 @@ export class TopicsController {
     schema: {
       example: {
         _id: '673abc123def456789012345',
-        topic_name: 'Introducción al Álgebra',
+        topic_name: 'introduccion-algebra',
         description: 'Conceptos básicos de álgebra para principiantes',
-        category: 'Matemáticas',
-        difficulty: 'beginner',
-        visibility: 'public',
-        status: 'approved',
         created_by: {
           _id: '673user123def456789012345',
           user_name: 'profesor1',
-          profile: { fullName: 'Juan Pérez' }
+          role: 'docente'
         },
+        category_id: '673cat123def456789012345',
+        organization_id: null,
+        cardColor: '#4a90e2',
+        status: 'approved',
+        visibility: 'public',
+        difficulty: 'beginner',
+        tags: ['matemáticas', 'álgebra', 'educación'],
         content: [
           {
+            id: '1',
             type: 'heading',
             content: '¿Qué es el Álgebra?',
             order: 0,
             style: { fontSize: 'large', fontWeight: 'bold' }
           },
           {
-            type: 'paragraph',
-            content: 'El álgebra es una rama de las matemáticas...',
+            id: '2',
+            type: 'text',
+            content: 'El álgebra es una rama de las matemáticas que utiliza letras y símbolos para representar números.',
             order: 1
           },
           {
-            type: 'code',
+            id: '3',
+            type: 'code-static',
             content: 'x + 5 = 10',
             order: 2,
             style: { codeLanguage: 'text', codeTheme: 'dark' }
           }
         ],
-        approvedBy: '673admin123def456789012345',
-        approvedAt: '2024-11-15T14:00:00.000Z',
+        reviewed_by: {
+          _id: '673admin123def456789012345',
+          user_name: 'admin',
+          role: 'admin'
+        },
+        reviewed_at: '2024-11-15T14:00:00.000Z',
+        publishedAt: '2024-11-15T14:00:00.000Z',
+        version: 1,
+        is_editing: false,
         createdAt: '2024-11-14T10:00:00.000Z',
         updatedAt: '2024-11-15T14:00:00.000Z'
       }
@@ -340,21 +413,205 @@ export class TopicsController {
     type: UpdateTopicDto,
     examples: {
       ejemplo1: {
-        summary: 'Actualizar descripción y contenido',
+        summary: 'Agregar Contenido Básico (Texto y Títulos)',
         value: {
-          description: 'Descripción actualizada del topic',
           content: [
             {
+              id: '1',
               type: 'heading',
-              content: 'Nuevo título',
+              content: 'Introducción al Tema',
+              order: 0,
+              style: { fontSize: 'large', fontWeight: 'bold', color: '#2c3e50' }
+            },
+            {
+              id: '2',
+              type: 'text',
+              content: 'Este es un párrafo de introducción que explica los conceptos básicos del tema.',
+              order: 1
+            },
+            {
+              id: '3',
+              type: 'heading',
+              content: 'Conceptos Principales',
+              order: 2,
+              style: { fontSize: 'medium', fontWeight: 'bold' }
+            },
+            {
+              id: '4',
+              type: 'text',
+              content: 'Aquí desarrollamos los conceptos principales con más detalle.',
+              order: 3
+            }
+          ]
+        }
+      },
+      ejemplo2: {
+        summary: 'Agregar Código y Ejemplos Prácticos',
+        value: {
+          content: [
+            {
+              id: '1',
+              type: 'heading',
+              content: 'Ejemplo de Código',
               order: 0
             },
             {
-              type: 'paragraph',
-              content: 'Contenido actualizado',
+              id: '2',
+              type: 'text',
+              content: 'A continuación se muestra un ejemplo de código JavaScript:',
               order: 1
+            },
+            {
+              id: '3',
+              type: 'code-static',
+              content: 'function saludar(nombre) {\n  console.log(`Hola, ${nombre}!`);\n}\n\nsaludar("Estudiante");',
+              order: 2,
+              style: { 
+                codeLanguage: 'javascript', 
+                codeTheme: 'dark',
+                showLineNumbers: true
+              }
+            },
+            {
+              id: '4',
+              type: 'text',
+              content: 'Este código define una función que saluda al usuario.',
+              order: 3
             }
           ]
+        }
+      },
+      ejemplo3: {
+        summary: 'Agregar Imágenes y Multimedia',
+        value: {
+          content: [
+            {
+              id: '1',
+              type: 'heading',
+              content: 'Recursos Visuales',
+              order: 0
+            },
+            {
+              id: '2',
+              type: 'image',
+              content: 'https://ejemplo.com/imagen-educativa.jpg',
+              order: 1,
+              style: { 
+                width: '100%', 
+                height: 'auto',
+                alt: 'Diagrama explicativo del concepto'
+              }
+            },
+            {
+              id: '3',
+              type: 'text',
+              content: 'La imagen anterior muestra un diagrama del proceso.',
+              order: 2
+            },
+            {
+              id: '4',
+              type: 'video',
+              content: 'https://youtube.com/embed/VIDEO_ID',
+              order: 3,
+              style: { width: '100%', height: '400px' }
+            }
+          ]
+        }
+      },
+      ejemplo4: {
+        summary: 'Agregar Listas y Estructura',
+        value: {
+          content: [
+            {
+              id: '1',
+              type: 'heading',
+              content: 'Pasos a Seguir',
+              order: 0
+            },
+            {
+              id: '2',
+              type: 'list',
+              content: '["Primer paso: Leer la documentación","Segundo paso: Practicar con ejemplos","Tercer paso: Resolver ejercicios","Cuarto paso: Crear tu propio proyecto"]',
+              order: 1,
+              style: { listType: 'ordered' }
+            },
+            {
+              id: '3',
+              type: 'text',
+              content: 'Puntos importantes a recordar:',
+              order: 2
+            },
+            {
+              id: '4',
+              type: 'list',
+              content: '["Siempre comenta tu código","Usa nombres descriptivos para variables","Prueba tu código frecuentemente"]',
+              order: 3,
+              style: { listType: 'unordered' }
+            }
+          ]
+        }
+      },
+      ejemplo5: {
+        summary: 'Contenido Completo con Todos los Tipos',
+        value: {
+          description: 'Topic completo actualizado con contenido multimedia',
+          content: [
+            {
+              id: '1',
+              type: 'heading',
+              content: 'Introducción a la Programación',
+              order: 0,
+              style: { fontSize: 'xlarge', fontWeight: 'bold', color: '#2c3e50' }
+            },
+            {
+              id: '2',
+              type: 'text',
+              content: 'La programación es el arte de dar instrucciones a una computadora.',
+              order: 1
+            },
+            {
+              id: '3',
+              type: 'image',
+              content: 'https://ejemplo.com/programacion.jpg',
+              order: 2,
+              style: { width: '80%', height: 'auto' }
+            },
+            {
+              id: '4',
+              type: 'heading',
+              content: 'Tu Primer Programa',
+              order: 3,
+              style: { fontSize: 'large', fontWeight: 'bold' }
+            },
+            {
+              id: '5',
+              type: 'code-static',
+              content: 'console.log("Hola Mundo!");',
+              order: 4,
+              style: { codeLanguage: 'javascript', codeTheme: 'dark' }
+            },
+            {
+              id: '6',
+              type: 'text',
+              content: 'Este es el programa más básico en JavaScript.',
+              order: 5
+            },
+            {
+              id: '7',
+              type: 'video',
+              content: 'https://youtube.com/embed/VIDEO_ID',
+              order: 6,
+              style: { width: '100%', height: '400px' }
+            },
+            {
+              id: '8',
+              type: 'list',
+              content: '["Variables y tipos de datos","Estructuras de control","Funciones","Objetos y arrays"]',
+              order: 7,
+              style: { listType: 'ordered' }
+            }
+          ],
+          tags: ['programación', 'javascript', 'principiantes', 'actualizado']
         }
       }
     }
@@ -365,10 +622,17 @@ export class TopicsController {
     schema: {
       example: {
         _id: '673abc123def456789012345',
-        topic_name: 'Introducción al Álgebra',
-        description: 'Descripción actualizada del topic',
-        category: 'Matemáticas',
+        topic_name: 'introduccion-algebra',
+        description: 'Descripción actualizada del topic con más detalles',
+        created_by: '673user123def456789012345',
+        category_id: '673cat123def456789012345',
+        cardColor: '#4a90e2',
         status: 'draft',
+        visibility: 'public',
+        difficulty: 'beginner',
+        tags: ['matemáticas', 'álgebra', 'actualizado'],
+        version: 2,
+        is_editing: true,
         updatedAt: '2024-11-16T15:00:00.000Z'
       }
     }
