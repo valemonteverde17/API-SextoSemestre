@@ -22,8 +22,8 @@ export class Users {
   @Prop({ required: true, select: false })
   password: string;
 
-  @Prop()
-  email?: string;
+  @Prop({ unique: true, required: true })
+  email: string;
 
   // ROLES: admin, revisor, docente, estudiante
   @Prop({ 
@@ -32,6 +32,12 @@ export class Users {
     default: 'estudiante'
   })
   role: string;
+
+  // SUPER ADMIN (acceso total al sistema)
+  @Prop({ 
+    default: false 
+  })
+  is_super?: boolean;
 
   // ORGANIZACIÓN (null si es usuario independiente)
   @Prop({ type: Types.ObjectId, ref: 'Organization', required: false })
@@ -80,3 +86,9 @@ export class Users {
 }
 
 export const UsersSchema = SchemaFactory.createForClass(Users);
+
+// Índices para optimizar búsquedas
+UsersSchema.index({ email: 1 });
+UsersSchema.index({ user_name: 1 });
+UsersSchema.index({ organization_id: 1 });
+UsersSchema.index({ role: 1, status: 1 });

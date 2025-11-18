@@ -114,8 +114,12 @@ export class TopicsController {
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   @ApiResponse({ status: 401, description: 'No autenticado' })
   @ApiResponse({ status: 403, description: 'No autorizado - Solo docentes y admins' })
-  create(@Body() createTopicDto: CreateTopicDto, @GetUser('_id') userId: string) {
-    createTopicDto.created_by = userId;
+  create(@Body() createTopicDto: CreateTopicDto, @GetUser() user: any) {
+    // Asignar automáticamente created_by y organization_id desde el usuario autenticado
+    createTopicDto.created_by = user._id;
+    if (user.organization_id && !createTopicDto.organization_id) {
+      createTopicDto.organization_id = user.organization_id.toString();
+    }
     return this.topicsService.create(createTopicDto);
   }
 

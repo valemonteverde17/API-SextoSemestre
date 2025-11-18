@@ -136,7 +136,13 @@ export class TopicsService {
       throw new BadRequestException('Invalid topic ID');
     }
 
-    const topic = await this.topicsModel.findById(id).exec();
+    const topic = await this.topicsModel
+      .findById(id)
+      .populate('created_by', 'user_name email role')
+      .populate('organization_id', 'name code')
+      .populate('reviewed_by', 'user_name email')
+      .exec();
+      
     if (!topic) {
       throw new NotFoundException(`Topic with id ${id} not found`);
     }
@@ -171,6 +177,9 @@ export class TopicsService {
 
     const updatedTopic = await this.topicsModel
       .findByIdAndUpdate(id, updateTopicDto, { new: true })
+      .populate('created_by', 'user_name email role')
+      .populate('organization_id', 'name code')
+      .populate('reviewed_by', 'user_name email')
       .exec();
 
     if (!updatedTopic) {

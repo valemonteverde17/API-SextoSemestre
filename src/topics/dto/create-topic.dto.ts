@@ -51,11 +51,13 @@ export class BlockStyleDto {
 
 export class ContentBlockDto {
   @ApiProperty({ example: '1' })
+  @IsOptional()
   @IsString()
-  id: string;
+  id?: string;
 
   @ApiProperty({ example: 'text', enum: ['text', 'heading', 'list', 'quote', 'code-static', 'code-live'] })
   @IsString()
+  @IsIn(['text', 'heading', 'list', 'quote', 'code-static', 'code-live'])
   type: 'text' | 'heading' | 'list' | 'quote' | 'code-static' | 'code-live';
 
   @ApiProperty({ example: 'Contenido del bloque' })
@@ -63,7 +65,8 @@ export class ContentBlockDto {
   content: string;
 
   @ApiProperty({ example: 0 })
-  order: number;
+  @IsOptional()
+  order?: number;
 
   @ApiPropertyOptional({ type: BlockStyleDto })
   @IsOptional()
@@ -128,14 +131,14 @@ export class CreateTopicDto {
   @IsString()
   cardColor?: string;
 
-  @ApiProperty({
-    description: 'ID del usuario que crea el tema',
+  @ApiPropertyOptional({
+    description: 'ID del usuario que crea el tema (se asigna automáticamente desde el token)',
     example: '507f1f77bcf86cd799439011'
   })
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @IsMongoId()
-  created_by: string;
+  created_by?: string;
 
   @ApiPropertyOptional({
     description: 'ID de la organización (opcional)',

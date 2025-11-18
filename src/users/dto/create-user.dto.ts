@@ -52,13 +52,14 @@ export class CreateUserDto {
   @MinLength(8)
   password: string;
 
-  @ApiPropertyOptional({
-    description: "Email del usuario",
-    example: "usuario@example.com"
+  @ApiProperty({
+    description: "Email del usuario (único y requerido)",
+    example: "usuario@example.com",
+    uniqueItems: true
   })
-  @IsOptional()
+  @IsNotEmpty()
   @IsEmail()
-  email?: string;
+  email: string;
 
   @ApiProperty({
     description: "Rol del usuario",
@@ -71,6 +72,15 @@ export class CreateUserDto {
     message: 'Role must be one of: admin, revisor, docente, estudiante' 
   })
   role: string;
+
+  @ApiPropertyOptional({
+    description: "Super administrador con acceso total al sistema",
+    example: false,
+    default: false
+  })
+  @IsOptional()
+  @IsBoolean()
+  is_super?: boolean;
 
   @ApiPropertyOptional({
     description: "ID de la organización (opcional, para usuarios de organizaciones)",

@@ -350,7 +350,6 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
 
 - **Documentación**: [http://localhost:3000/api](http://localhost:3000/api)
 - **Issues**: [GitHub Issues](https://github.com/tu-usuario/cibereduca-api/issues)
-- **Email**: soporte@cibereduca.com
 
 ---
 

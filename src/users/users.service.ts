@@ -16,13 +16,24 @@ export class UsersService {
     // Verificar si el username ya existe
     const existingUser = await this.usersModel.findOne({ user_name: createUserDto.user_name }).exec();
     if (existingUser) {
-      throw new ConflictException('Username already exists');
+      throw new ConflictException('El nombre de usuario ya existe');
+    }
+
+    // Verificar si el email ya existe
+    const existingEmail = await this.usersModel.findOne({ email: createUserDto.email }).exec();
+    if (existingEmail) {
+      throw new ConflictException('El email ya está registrado');
     }
 
     // Validar que el rol sea válido
     const validRoles = ['admin', 'revisor', 'docente', 'estudiante'];
     if (!validRoles.includes(createUserDto.role)) {
       throw new BadRequestException(`Invalid role. Must be one of: ${validRoles.join(', ')}`);
+    }
+
+    // Validar organization_id según rol
+    if (createUserDto.role === 'admin' && !createUserDto.organization_id) {
+      throw new BadRequestException('Admin debe tener una organización asignada');
     }
 
     // Hashear la contraseña antes de guardarla
@@ -80,7 +91,20 @@ export class UsersService {
   async findByUsername(username: string): Promise<UsersDocument | null> {
     return this.usersModel.findOne({ user_name: username }).select('+password').exec();
   }
-  
+
+  async findByEmail(email: string): Promise<UsersDocument | null> {
+    return this.usersModel.findOne({ email }).select('+password').exec();
+  }
+
+  async findByUsernameOrEmail(identifier: string): Promise<UsersDocument | null> {
+    return this.usersModel.findOne({
+      $or: [
+        { user_name: identifier },
+        { email: identifier }
+      ]
+    }).select('+password').exec();
+  }
+
   async update(id: string, updateUserDto: UpdateUserDto): Promise<Users> {
     // Si se actualiza la contraseña, hashearla
     if (updateUserDto.password) {
