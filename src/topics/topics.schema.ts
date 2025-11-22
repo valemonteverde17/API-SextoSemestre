@@ -45,8 +45,24 @@ export class Topics {
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Users' }], default: [] })
   edit_permissions?: Types.ObjectId[];
 
-  @Prop({ default: false })
+  @Prop({ 
+    type: String, 
+    enum: ['draft', 'pending_approval', 'approved', 'editing', 'rejected', 'deleted'],
+    default: 'draft' 
+  })
+  status: string;
+
+  @Prop({ default: false }) // Deprecated - usar status
   is_approved: boolean;
+
+  @Prop({ type: Types.ObjectId, ref: 'Users' })
+  edit_requested_by?: Types.ObjectId;
+
+  @Prop()
+  edit_requested_at?: Date;
+
+  @Prop({ default: false })
+  edit_request_pending: boolean;
 
   @Prop({ default: false })
   is_deleted?: boolean;

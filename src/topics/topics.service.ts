@@ -21,7 +21,8 @@ export class TopicsService {
       ...createTopicDto,
       category_id: createTopicDto.category_id ? new Types.ObjectId(createTopicDto.category_id) : undefined,
       created_by: new Types.ObjectId(userId),
-      is_approved: role === 'admin', // Admin topics are auto-approved
+      status: role === 'admin' ? 'approved' : 'draft', // Admin crea aprobados, docentes en borrador
+      is_approved: role === 'admin', // Deprecated - mantener compatibilidad
       history: [{
         date: new Date(),
         user: new Types.ObjectId(userId),
@@ -172,5 +173,207 @@ export class TopicsService {
       topic.deleted_by = undefined;
       
       return await topic.save();
+  }
+
+  async submitForApproval(id: string, userId: string): Promise<Topics> {
+    const topic = await this.topicsModel.findById(id).exec();
+    if (!topic) throw new NotFoundException(`Topic with id ${id} not found`);
+
+    // Validar que sea el creador
+    if (topic.created_by?.toString() !== userId) {
+      throw new ForbiddenException('Only the creator can submit for approval');
+    }
+
+    // Validar estado actual
+    if (topic.status !== 'draft' && topic.status !== 'editing' && topic.status !== 'rejected') {
+      throw new BadRequestException(`Cannot submit topic with status: ${topic.status}`);
+    }
+
+    topic.status = 'pending_approval';
+    if (!topic.history) topic.history = [];
+    topic.history.push({
+      date: new Date(),
+      user: new Types.ObjectId(userId),
+      action: 'submit_for_approval'
+    });
+
+    return await topic.save();
+  }
+
+  async approveTopic(id: string, userId: string): Promise<Topics> {
+    const topic = await this.topicsModel.findById(id).exec();
+    if (!topic) throw new NotFoundException(`Topic with id ${id} not found`);
+
+    if (topic.status !== 'pending_approval') {
+      throw new BadRequestException('Topic is not pending approval');
+    }
+
+    topic.status = 'approved';
+    topic.is_approved = true; // Mantener compatibilidad
+    topic.edit_request_pending = false; // Limpiar solicitud si existía
+    if (!topic.history) topic.history = [];
+    topic.history.push({
+      date: new Date(),
+      user: new Types.ObjectId(userId),
+      action: 'approve'
+    });
+
+    return await topic.save();
+  }
+
+  async rejectTopic(id: string, userId: string, reason?: string): Promise<Topics> {
+    const topic = await this.topicsModel.findById(id).exec();
+    if (!topic) throw new NotFoundException(`Topic with id ${id} not found`);
+
+    if (topic.status !== 'pending_approval') {
+      throw new BadRequestException('Topic is not pending approval');
+    }
+
+    topic.status = 'rejected';
+    topic.is_approved = false;
+    if (!topic.history) topic.history = [];
+    topic.history.push({
+      date: new Date(),
+      user: new Types.ObjectId(userId),
+      action: `reject${reason ? `: ${reason}` : ''}`
+    });
+
+    return await topic.save();
+  }
+
+  async requestEdit(id: string, userId: string): Promise<Topics> {
+    const topic = await this.topicsModel.findById(id).exec();
+    if (!topic) throw new NotFoundException(`Topic with id ${id} not found`);
+
+    // Validar que sea creador o colaborador
+    const isOwner = topic.created_by?.toString() === userId;
+    const isCollaborator = topic.edit_permissions?.some(uid => uid.toString() === userId);
+    
+    if (!isOwner && !isCollaborator) {
+      throw new ForbiddenException('Only creator or collaborators can request edit');
+    }
+
+    if (topic.status !== 'approved') {
+      throw new BadRequestException('Can only request edit for approved topics');
+    }
+
+    topic.edit_request_pending = true;
+    topic.edit_requested_by = new Types.ObjectId(userId);
+    topic.edit_requested_at = new Date();
+    if (!topic.history) topic.history = [];
+    topic.history.push({
+      date: new Date(),
+      user: new Types.ObjectId(userId),
+      action: 'request_edit'
+    });
+
+    return await topic.save();
+  }
+
+  async approveEditRequest(id: string, userId: string): Promise<Topics> {
+    const topic = await this.topicsModel.findById(id).exec();
+    if (!topic) throw new NotFoundException(`Topic with id ${id} not found`);
+
+    if (!topic.edit_request_pending) {
+      throw new BadRequestException('No edit request pending');
+    }
+
+    topic.status = 'editing';
+    topic.edit_request_pending = false;
+    if (!topic.history) topic.history = [];
+    topic.history.push({
+      date: new Date(),
+      user: new Types.ObjectId(userId),
+      action: 'approve_edit_request'
+    });
+
+    return await topic.save();
+  }
+
+  async rejectEditRequest(id: string, userId: string): Promise<Topics> {
+    const topic = await this.topicsModel.findById(id).exec();
+    if (!topic) throw new NotFoundException(`Topic with id ${id} not found`);
+
+    if (!topic.edit_request_pending) {
+      throw new BadRequestException('No edit request pending');
+    }
+
+    topic.edit_request_pending = false;
+    topic.edit_requested_by = undefined;
+    topic.edit_requested_at = undefined;
+    if (!topic.history) topic.history = [];
+    topic.history.push({
+      date: new Date(),
+      user: new Types.ObjectId(userId),
+      action: 'reject_edit_request'
+    });
+
+    return await topic.save();
+  }
+
+  async addCollaborator(topicId: string, collaboratorId: string, requestingUserId: string): Promise<Topics> {
+    const topic = await this.topicsModel.findById(topicId).exec();
+    if (!topic) throw new NotFoundException(`Topic with id ${topicId} not found`);
+
+    // Solo creador o admin pueden añadir colaboradores
+    const isOwner = topic.created_by?.toString() === requestingUserId;
+    if (!isOwner) {
+      throw new ForbiddenException('Only the creator can add collaborators');
+    }
+
+    // Verificar que no esté ya en la lista
+    const alreadyCollaborator = topic.edit_permissions?.some(uid => uid.toString() === collaboratorId);
+    if (alreadyCollaborator) {
+      throw new ConflictException('User is already a collaborator');
+    }
+
+    if (!topic.edit_permissions) {
+      topic.edit_permissions = [];
+    }
+
+    topic.edit_permissions.push(new Types.ObjectId(collaboratorId));
+    if (!topic.history) topic.history = [];
+    topic.history.push({
+      date: new Date(),
+      user: new Types.ObjectId(requestingUserId),
+      action: `add_collaborator:${collaboratorId}`
+    });
+
+    return await topic.save();
+  }
+
+  async removeCollaborator(topicId: string, collaboratorId: string, requestingUserId: string): Promise<Topics> {
+    const topic = await this.topicsModel.findById(topicId).exec();
+    if (!topic) throw new NotFoundException(`Topic with id ${topicId} not found`);
+
+    const isOwner = topic.created_by?.toString() === requestingUserId;
+    if (!isOwner) {
+      throw new ForbiddenException('Only the creator can remove collaborators');
+    }
+
+    topic.edit_permissions = topic.edit_permissions?.filter(uid => uid.toString() !== collaboratorId) || [];
+    if (!topic.history) topic.history = [];
+    topic.history.push({
+      date: new Date(),
+      user: new Types.ObjectId(requestingUserId),
+      action: `remove_collaborator:${collaboratorId}`
+    });
+
+    return await topic.save();
+  }
+
+  async findByStatus(status: string): Promise<Topics[]> {
+    return this.topicsModel.find({ status, is_deleted: false })
+      .populate('created_by', 'user_name')
+      .populate('edit_requested_by', 'user_name')
+      .populate('edit_permissions', 'user_name')
+      .exec();
+  }
+
+  async findEditRequests(): Promise<Topics[]> {
+    return this.topicsModel.find({ edit_request_pending: true, is_deleted: false })
+      .populate('created_by', 'user_name')
+      .populate('edit_requested_by', 'user_name')
+      .exec();
   }
 }

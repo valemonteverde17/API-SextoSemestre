@@ -49,6 +49,22 @@ export class TopicsController {
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('admin')
+  @Get('edit-requests')
+  @ApiOperation({ summary: 'Get topics with pending edit requests (Admin only)' })
+  findEditRequests() {
+    return this.topicsService.findEditRequests();
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('admin')
+  @Get('status/:status')
+  @ApiOperation({ summary: 'Get topics by status (Admin only)' })
+  findByStatus(@Param('status') status: string) {
+    return this.topicsService.findByStatus(status);
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('admin')
   @Patch(':id/restore')
   @ApiOperation({ summary: 'Restore deleted topic (Admin only)' })
   restore(@Param('id') id: string) {
@@ -61,6 +77,70 @@ export class TopicsController {
   @ApiOperation({ summary: 'Approve pending topic (Admin only)' })
   approve(@Param('id') id: string) {
     return this.topicsService.approve(id);
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('docente', 'admin')
+  @Post(':id/submit')
+  @ApiOperation({ summary: 'Submit topic for approval' })
+  submitForApproval(@Param('id') id: string, @Request() req) {
+    return this.topicsService.submitForApproval(id, req.user.userId);
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('admin')
+  @Patch(':id/approve-topic')
+  @ApiOperation({ summary: 'Approve topic (Admin only)' })
+  approveTopic(@Param('id') id: string, @Request() req) {
+    return this.topicsService.approveTopic(id, req.user.userId);
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('admin')
+  @Patch(':id/reject-topic')
+  @ApiOperation({ summary: 'Reject topic (Admin only)' })
+  rejectTopic(@Param('id') id: string, @Body() body: { reason?: string }, @Request() req) {
+    return this.topicsService.rejectTopic(id, req.user.userId, body.reason);
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('docente', 'admin')
+  @Post(':id/request-edit')
+  @ApiOperation({ summary: 'Request edit permission for approved topic' })
+  requestEdit(@Param('id') id: string, @Request() req) {
+    return this.topicsService.requestEdit(id, req.user.userId);
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('admin')
+  @Patch(':id/approve-edit-request')
+  @ApiOperation({ summary: 'Approve edit request (Admin only)' })
+  approveEditRequest(@Param('id') id: string, @Request() req) {
+    return this.topicsService.approveEditRequest(id, req.user.userId);
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('admin')
+  @Patch(':id/reject-edit-request')
+  @ApiOperation({ summary: 'Reject edit request (Admin only)' })
+  rejectEditRequest(@Param('id') id: string, @Request() req) {
+    return this.topicsService.rejectEditRequest(id, req.user.userId);
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('docente', 'admin')
+  @Post(':id/collaborators')
+  @ApiOperation({ summary: 'Add collaborator to topic' })
+  addCollaborator(@Param('id') id: string, @Body() body: { collaboratorId: string }, @Request() req) {
+    return this.topicsService.addCollaborator(id, body.collaboratorId, req.user.userId);
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('docente', 'admin')
+  @Delete(':id/collaborators/:collaboratorId')
+  @ApiOperation({ summary: 'Remove collaborator from topic' })
+  removeCollaborator(@Param('id') id: string, @Param('collaboratorId') collaboratorId: string, @Request() req) {
+    return this.topicsService.removeCollaborator(id, collaboratorId, req.user.userId);
   }
 
   @Get(':id')
