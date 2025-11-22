@@ -40,18 +40,30 @@ export class TopicsService {
   }
 
   async findAll(query?: any): Promise<Topics[]> {
-    const filter: any = { is_deleted: false, is_approved: true }; // Only show active and approved
+    const filter: any = { is_deleted: false };
+    
+    // Por defecto, solo mostrar temas aprobados (para estudiantes y vista pública)
+    if (!query?.all) {
+      filter.status = 'approved';
+    }
+    
     if (query?.category) {
       filter.category_id = new Types.ObjectId(query.category);
     }
     if (query?.search) {
         filter.topic_name = { $regex: query.search, $options: 'i' };
     }
-    // Si se pasa ?all=true (para admin), ignoramos is_approved
+    
+    // Si se pasa ?all=true (para admin/docentes), traer todos los temas sin filtro de status
     if (query?.all === 'true') {
-        delete filter.is_approved;
+        delete filter.status;
     }
-    return this.topicsModel.find(filter).populate('created_by', 'user_name').exec();
+    
+    return this.topicsModel
+      .find(filter)
+      .populate('created_by', 'user_name')
+      .populate('edit_permissions', 'user_name')
+      .exec();
   }
   
   async findTrash(): Promise<Topics[]> {
@@ -74,7 +86,11 @@ export class TopicsService {
       throw new BadRequestException('Invalid topic ID');
     }
 
-    const topic = await this.topicsModel.findOne({ _id: id, is_deleted: false }).populate('created_by', 'user_name').exec();
+    const topic = await this.topicsModel
+      .findOne({ _id: id, is_deleted: false })
+      .populate('created_by', 'user_name')
+      .populate('edit_permissions', 'user_name')
+      .exec();
     if (!topic) {
       throw new NotFoundException(`Topic with id ${id} not found`);
     }
