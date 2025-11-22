@@ -13,7 +13,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     PassportModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'secretKeyCiberEduca2025',
-      signOptions: { expiresIn: '24h' },
+      signOptions: { expiresIn: '24h' }, // Configurable en .env con JWT_EXPIRATION
     }),
   ],
   controllers: [AuthController],
