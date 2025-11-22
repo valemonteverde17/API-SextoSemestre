@@ -39,6 +39,27 @@ export class Topics {
   @Prop({ type: Types.ObjectId, ref: 'Category', required: false })
   category_id?: Types.ObjectId;
 
+  @Prop({ type: Types.ObjectId, ref: 'Users', required: false }) 
+  created_by?: Types.ObjectId;
+
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Users' }], default: [] })
+  edit_permissions?: Types.ObjectId[];
+
+  @Prop({ default: false })
+  is_approved: boolean;
+
+  @Prop({ default: false })
+  is_deleted?: boolean;
+
+  @Prop()
+  deleted_at?: Date;
+
+  @Prop({ type: Types.ObjectId, ref: 'Users' })
+  deleted_by?: Types.ObjectId;
+
+  @Prop({ type: [{ date: Date, user: { type: Types.ObjectId, ref: 'Users' }, action: String }], default: [] })
+  history?: { date: Date; user: Types.ObjectId; action: string }[];
+
   @Prop({ default: '#2b9997' })
   cardColor?: string;
 

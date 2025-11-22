@@ -11,10 +11,12 @@ import { HangmanModule } from './hangman/hangman.module';
 import { ConfigModule } from '@nestjs/config';
 import { MemoramaModule } from './memorama/memorama.module';
 import { ScoresModule } from './scores/scores.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    AuthModule,
     TopicsModule,
     UsersModule,
     MongooseModule.forRootAsync({
