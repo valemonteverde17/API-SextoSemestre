@@ -114,9 +114,9 @@ export class TopicsService {
     if (!topic) throw new NotFoundException(`Topic with id ${id} not found`);
 
     // Check permissions
-    const isOwner = topic.created_by?.toString() === user.userId;
+    const isOwner = topic.created_by?.toString() === user._id;
     const isAdmin = user.role === 'admin';
-    const canEdit = isOwner || isAdmin || (topic.edit_permissions && topic.edit_permissions.some(uid => uid.toString() === user.userId));
+    const canEdit = isOwner || isAdmin || (topic.edit_permissions && topic.edit_permissions.some(uid => uid.toString() === user._id));
 
     if (!canEdit) {
         throw new ForbiddenException('You do not have permission to edit this topic');
@@ -135,7 +135,7 @@ export class TopicsService {
 
     const historyEntry = {
         date: new Date(),
-        user: new Types.ObjectId(user.userId),
+        user: new Types.ObjectId(user._id),
         action: 'update'
     };
 
@@ -165,7 +165,7 @@ export class TopicsService {
     const topic = await this.topicsModel.findById(id).exec();
     if (!topic) throw new NotFoundException(`Topic with id ${id} not found`);
 
-    const isOwner = topic.created_by?.toString() === user.userId;
+    const isOwner = topic.created_by?.toString() === user._id;
     const isAdmin = user.role === 'admin';
 
     if (!isOwner && !isAdmin) {
@@ -175,7 +175,7 @@ export class TopicsService {
     // Soft Delete
     topic.is_deleted = true;
     topic.deleted_at = new Date();
-    topic.deleted_by = new Types.ObjectId(user.userId);
+    topic.deleted_by = new Types.ObjectId(user._id);
     
     return await topic.save();
   }

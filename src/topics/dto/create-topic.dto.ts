@@ -50,9 +50,10 @@ export class BlockStyleDto {
 }
 
 export class ContentBlockDto {
-  @ApiProperty({ example: '1' })
+  @ApiPropertyOptional({ example: '1' })
+  @IsOptional()
   @IsString()
-  id: string;
+  id?: string;
 
   @ApiProperty({ example: 'text', enum: ['text', 'heading', 'list', 'quote', 'code-static', 'code-live'] })
   @IsString()
@@ -62,8 +63,9 @@ export class ContentBlockDto {
   @IsString()
   content: string;
 
-  @ApiProperty({ example: 0 })
-  order: number;
+  @ApiPropertyOptional({ example: 0 })
+  @IsOptional()
+  order?: number;
 
   @ApiPropertyOptional({ type: BlockStyleDto })
   @IsOptional()

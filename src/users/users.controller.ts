@@ -5,9 +5,9 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiTags, ApiResponse, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { UsersDocument } from './users.schema';
 import * as bcrypt from 'bcrypt';
-import { AuthGuard } from '@nestjs/passport';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
+import { AuthGuard } from '../common/guards/auth.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -16,7 +16,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin')
   @Get('pending')
   @ApiOperation({ summary: 'Get pending users (Admin only)' })
@@ -24,7 +24,7 @@ export class UsersController {
     return this.usersService.findPending();
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin')
   @Patch(':id/status')
   @ApiOperation({ summary: 'Approve or Reject user (Admin only)' })
