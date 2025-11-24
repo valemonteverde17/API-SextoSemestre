@@ -5,11 +5,14 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // 👉 Esto habilita CORS para que el frontend pueda conectarse
-  app.enableCors({
-    origin: process.env.CORS_ORIGIN ?? 'http://localhost:5173', // permite peticiones desde tu frontend de Vite
-    credentials: true, // opcional, si luego manejas cookies/tokens
-  });
+  const corsOrigin = process.env.CORS_ORIGIN 
+      ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
+      : ['http://localhost:5173'];
+    
+    app.enableCors({
+      origin: corsOrigin, // Ahora es un array
+      credentials: true,
+    });
 
   const config = new DocumentBuilder()
     .setTitle('CiberEduca API')
