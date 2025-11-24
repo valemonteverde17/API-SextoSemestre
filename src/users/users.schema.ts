@@ -1,6 +1,5 @@
-
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
 
 export type UsersDocument = HydratedDocument<Users>;
 
@@ -15,7 +14,11 @@ export class Users {
   @Prop({ required: true, enum: ['docente', 'estudiante', 'admin'] })
   role: string;
 
-  @Prop({ required: true, enum: ['pending', 'active', 'rejected'], default: 'pending' })
+  @Prop({
+    required: true,
+    enum: ['pending', 'active', 'rejected'],
+    default: 'pending',
+  })
   status: string;
 
   @Prop()

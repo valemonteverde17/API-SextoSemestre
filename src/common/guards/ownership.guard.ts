@@ -1,4 +1,10 @@
-import { Injectable, CanActivate, ExecutionContext, ForbiddenException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Topics, TopicsDocument } from '../../topics/topics.schema';
@@ -36,7 +42,7 @@ export class OwnershipGuard implements CanActivate {
 
     // Determinar el tipo de recurso basado en la ruta
     const path = request.route.path;
-    
+
     if (path.includes('/topics')) {
       const topic = await this.topicsModel.findById(resourceId).exec();
       if (!topic) {
@@ -46,11 +52,13 @@ export class OwnershipGuard implements CanActivate {
       // Verificar si es creador o colaborador
       const isOwner = topic.created_by?.toString() === user._id?.toString();
       const isCollaborator = topic.edit_permissions?.some(
-        uid => uid.toString() === user._id?.toString()
+        (uid) => uid.toString() === user._id?.toString(),
       );
 
       if (!isOwner && !isCollaborator) {
-        throw new ForbiddenException('Solo el creador o colaboradores pueden modificar este tema');
+        throw new ForbiddenException(
+          'Solo el creador o colaboradores pueden modificar este tema',
+        );
       }
     }
 

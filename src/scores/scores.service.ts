@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Score, ScoreDocument } from './scores.schema';
@@ -31,25 +35,27 @@ export class ScoresService {
 
     if (existing) {
       // Actualizar el score existente (solo si el nuevo es mejor o más reciente)
-      const updated = await this.scoreModel.findByIdAndUpdate(
-        existing._id,
-        {
-          ...createScoreDto,
-          user_id: new Types.ObjectId(createScoreDto.user_id),
-          quiz_set_id: new Types.ObjectId(createScoreDto.quiz_set_id),
-          topic_id: new Types.ObjectId(createScoreDto.topic_id),
-          completed_at: new Date(),
-        },
-        { new: true },
-      ).populate('user_id', 'user_name role')
-       .populate('quiz_set_id', 'quiz_name')
-       .populate('topic_id', 'topic_name')
-       .exec();
-      
+      const updated = await this.scoreModel
+        .findByIdAndUpdate(
+          existing._id,
+          {
+            ...createScoreDto,
+            user_id: new Types.ObjectId(createScoreDto.user_id),
+            quiz_set_id: new Types.ObjectId(createScoreDto.quiz_set_id),
+            topic_id: new Types.ObjectId(createScoreDto.topic_id),
+            completed_at: new Date(),
+          },
+          { new: true },
+        )
+        .populate('user_id', 'user_name role')
+        .populate('quiz_set_id', 'quiz_name')
+        .populate('topic_id', 'topic_name')
+        .exec();
+
       if (!updated) {
         throw new NotFoundException('No se pudo actualizar el score');
       }
-      
+
       return updated;
     }
 
@@ -63,21 +69,23 @@ export class ScoresService {
     });
 
     const saved = await newScore.save();
-    const populated = await this.scoreModel.findById(saved._id)
+    const populated = await this.scoreModel
+      .findById(saved._id)
       .populate('user_id', 'user_name role')
       .populate('quiz_set_id', 'quiz_name')
       .populate('topic_id', 'topic_name')
       .exec();
-    
+
     if (!populated) {
       throw new NotFoundException('No se pudo crear el score');
     }
-    
+
     return populated;
   }
 
   async findAll(): Promise<Score[]> {
-    return this.scoreModel.find()
+    return this.scoreModel
+      .find()
       .populate('user_id', 'user_name role')
       .populate('quiz_set_id', 'quiz_name')
       .populate('topic_id', 'topic_name')
@@ -90,7 +98,8 @@ export class ScoresService {
       throw new BadRequestException('ID de usuario inválido');
     }
 
-    return this.scoreModel.find({ user_id: new Types.ObjectId(userId) })
+    return this.scoreModel
+      .find({ user_id: new Types.ObjectId(userId) })
       .populate('quiz_set_id', 'quiz_name')
       .populate('topic_id', 'topic_name')
       .sort({ completed_at: -1 })
@@ -102,7 +111,8 @@ export class ScoresService {
       throw new BadRequestException('ID de quiz set inválido');
     }
 
-    return this.scoreModel.find({ quiz_set_id: new Types.ObjectId(quizSetId) })
+    return this.scoreModel
+      .find({ quiz_set_id: new Types.ObjectId(quizSetId) })
       .populate('user_id', 'user_name role')
       .sort({ score: -1, time_taken: 1 })
       .exec();
@@ -113,7 +123,8 @@ export class ScoresService {
       throw new BadRequestException('ID de tema inválido');
     }
 
-    return this.scoreModel.find({ topic_id: new Types.ObjectId(topicId) })
+    return this.scoreModel
+      .find({ topic_id: new Types.ObjectId(topicId) })
       .populate('user_id', 'user_name role')
       .populate('quiz_set_id', 'quiz_name')
       .sort({ score: -1, time_taken: 1 })
@@ -131,7 +142,8 @@ export class ScoresService {
     }
 
     // Obtener todos los scores con populate
-    const allScores = await this.scoreModel.find()
+    const allScores = await this.scoreModel
+      .find()
       .populate('user_id', 'user_name role')
       .exec();
 
@@ -168,12 +180,13 @@ export class ScoresService {
     }
 
     // Convertir a array y calcular promedios
-    const ranking = Array.from(userScores.values()).map(user => ({
+    const ranking = Array.from(userScores.values()).map((user) => ({
       user_id: user.user_id,
       user_name: user.user_name,
       total_score: user.total_score,
       quizzes_completed: user.quizzes_completed,
-      average_score: Math.round((user.total_score / user.quizzes_completed) * 100) / 100,
+      average_score:
+        Math.round((user.total_score / user.quizzes_completed) * 100) / 100,
       total_time: user.total_time,
     }));
 
@@ -196,7 +209,8 @@ export class ScoresService {
       throw new BadRequestException('ID de quiz set inválido');
     }
 
-    return this.scoreModel.find({ quiz_set_id: new Types.ObjectId(quizSetId) })
+    return this.scoreModel
+      .find({ quiz_set_id: new Types.ObjectId(quizSetId) })
       .populate('user_id', 'user_name role')
       .sort({ score: -1, time_taken: 1 })
       .limit(10)
@@ -208,7 +222,9 @@ export class ScoresService {
       throw new BadRequestException('ID de usuario inválido');
     }
 
-    const scores = await this.scoreModel.find({ user_id: new Types.ObjectId(userId) });
+    const scores = await this.scoreModel.find({
+      user_id: new Types.ObjectId(userId),
+    });
 
     if (scores.length === 0) {
       return {
@@ -223,8 +239,10 @@ export class ScoresService {
 
     const stats = {
       total_quizzes: scores.length,
-      average_score: Math.round(scores.reduce((sum, s) => sum + s.score, 0) / scores.length),
-      highest_score: Math.max(...scores.map(s => s.score)),
+      average_score: Math.round(
+        scores.reduce((sum, s) => sum + s.score, 0) / scores.length,
+      ),
+      highest_score: Math.max(...scores.map((s) => s.score)),
       total_time: scores.reduce((sum, s) => sum + s.time_taken, 0),
       total_correct: scores.reduce((sum, s) => sum + s.correct_answers, 0),
       total_questions: scores.reduce((sum, s) => sum + s.total_questions, 0),
@@ -238,7 +256,8 @@ export class ScoresService {
       throw new BadRequestException('ID inválido');
     }
 
-    const score = await this.scoreModel.findById(id)
+    const score = await this.scoreModel
+      .findById(id)
       .populate('user_id', 'user_name role')
       .populate('quiz_set_id', 'quiz_name')
       .populate('topic_id', 'topic_name')
@@ -256,11 +275,8 @@ export class ScoresService {
       throw new BadRequestException('ID inválido');
     }
 
-    const updated = await this.scoreModel.findByIdAndUpdate(
-      id,
-      updateScoreDto,
-      { new: true },
-    )
+    const updated = await this.scoreModel
+      .findByIdAndUpdate(id, updateScoreDto, { new: true })
       .populate('user_id', 'user_name role')
       .populate('quiz_set_id', 'quiz_name')
       .populate('topic_id', 'topic_name')

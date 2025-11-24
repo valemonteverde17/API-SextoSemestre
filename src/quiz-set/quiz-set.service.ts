@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { QuizSet, QuizSetDocument } from './quiz-set.schema';
@@ -11,7 +16,11 @@ export class QuizSetService {
     @InjectModel(QuizSet.name) private quizSetModel: Model<QuizSetDocument>,
   ) {}
 
-  async create(createQuizSetDto: CreateQuizSetDto, userId: string, role: string): Promise<QuizSet> {
+  async create(
+    createQuizSetDto: CreateQuizSetDto,
+    userId: string,
+    role: string,
+  ): Promise<QuizSet> {
     const newQuizSetData = {
       ...createQuizSetDto,
       created_by: new Types.ObjectId(userId),
@@ -49,20 +58,27 @@ export class QuizSetService {
       .exec();
   }
 
-  async update(id: string, updateQuizSetDto: UpdateQuizSetDto, user: any): Promise<QuizSet> {
+  async update(
+    id: string,
+    updateQuizSetDto: UpdateQuizSetDto,
+    user: any,
+  ): Promise<QuizSet> {
     if (!Types.ObjectId.isValid(id)) {
       throw new BadRequestException('Invalid quiz set ID');
     }
 
     const quizSet = await this.quizSetModel.findById(id).exec();
-    if (!quizSet) throw new NotFoundException(`QuizSet with ID ${id} not found`);
+    if (!quizSet)
+      throw new NotFoundException(`QuizSet with ID ${id} not found`);
 
     // Check permissions: owner or admin
     const isOwner = quizSet.created_by?.toString() === user._id;
     const isAdmin = user.role === 'admin';
 
     if (!isOwner && !isAdmin) {
-      throw new ForbiddenException('You do not have permission to edit this quiz set');
+      throw new ForbiddenException(
+        'You do not have permission to edit this quiz set',
+      );
     }
 
     const updatedQuizSet = await this.quizSetModel
@@ -81,14 +97,17 @@ export class QuizSetService {
     }
 
     const quizSet = await this.quizSetModel.findById(id).exec();
-    if (!quizSet) throw new NotFoundException(`QuizSet with ID ${id} not found`);
+    if (!quizSet)
+      throw new NotFoundException(`QuizSet with ID ${id} not found`);
 
     // Check permissions: owner or admin
     const isOwner = quizSet.created_by?.toString() === user._id;
     const isAdmin = user.role === 'admin';
 
     if (!isOwner && !isAdmin) {
-      throw new ForbiddenException('Only the owner or admin can delete this quiz set');
+      throw new ForbiddenException(
+        'Only the owner or admin can delete this quiz set',
+      );
     }
 
     // Soft Delete

@@ -1,4 +1,11 @@
-import { IsNotEmpty, IsString, IsArray, IsMongoId, IsOptional, IsNumber } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsArray,
+  IsMongoId,
+  IsOptional,
+  IsNumber,
+} from 'class-validator';
 
 export class CreateQuizDto {
   @IsNotEmpty() @IsString() question: string;
@@ -8,4 +15,3 @@ export class CreateQuizDto {
   @IsOptional() @IsMongoId() quiz_set_id?: string;
   @IsOptional() @IsNumber() order?: number;
 }
-

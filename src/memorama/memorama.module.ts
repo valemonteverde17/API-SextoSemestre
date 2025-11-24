@@ -6,7 +6,9 @@ import { Memorama, MemoramaSchema } from './memorama.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Memorama.name, schema: MemoramaSchema }]),
+    MongooseModule.forFeature([
+      { name: Memorama.name, schema: MemoramaSchema },
+    ]),
   ],
   controllers: [MemoramaController],
   providers: [MemoramaService],

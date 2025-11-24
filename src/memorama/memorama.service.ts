@@ -36,7 +36,10 @@ export class MemoramaService {
     return pair;
   }
 
-  async update(id: string, updateMemoramaDto: UpdateMemoramaDto): Promise<Memorama> {
+  async update(
+    id: string,
+    updateMemoramaDto: UpdateMemoramaDto,
+  ): Promise<Memorama> {
     const updatedPair = await this.memoramaModel
       .findByIdAndUpdate(id, updateMemoramaDto, { new: true })
       .exec();

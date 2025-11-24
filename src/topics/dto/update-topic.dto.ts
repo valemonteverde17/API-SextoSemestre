@@ -1,5 +1,13 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, MinLength, IsMongoId, IsArray, ValidateNested, IsIn } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  MinLength,
+  IsMongoId,
+  IsArray,
+  ValidateNested,
+  IsIn,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ContentBlockDto } from './create-topic.dto';
 
@@ -23,7 +31,7 @@ export class UpdateTopicDto {
 
   @ApiPropertyOptional({
     description: 'Bloques de contenido del tema',
-    type: [ContentBlockDto]
+    type: [ContentBlockDto],
   })
   @IsOptional()
   @IsArray()
@@ -33,7 +41,7 @@ export class UpdateTopicDto {
 
   @ApiPropertyOptional({
     description: 'Color de la card del tema',
-    example: '#2b9997'
+    example: '#2b9997',
   })
   @IsOptional()
   @IsString()
@@ -42,7 +50,7 @@ export class UpdateTopicDto {
   @ApiPropertyOptional({
     description: 'Tags del tema',
     example: ['seguridad', 'contraseñas'],
-    type: [String]
+    type: [String],
   })
   @IsOptional()
   @IsArray()
@@ -51,7 +59,7 @@ export class UpdateTopicDto {
   @ApiPropertyOptional({
     description: 'Dificultad del tema',
     example: 'beginner',
-    enum: ['beginner', 'intermediate', 'advanced']
+    enum: ['beginner', 'intermediate', 'advanced'],
   })
   @IsOptional()
   @IsString()
@@ -61,17 +69,31 @@ export class UpdateTopicDto {
   @ApiPropertyOptional({
     description: 'Estado del tema',
     example: 'draft',
-    enum: ['draft', 'pending_approval', 'approved', 'rejected', 'editing', 'deleted']
+    enum: [
+      'draft',
+      'pending_approval',
+      'approved',
+      'rejected',
+      'editing',
+      'deleted',
+    ],
   })
   @IsOptional()
   @IsString()
-  @IsIn(['draft', 'pending_approval', 'approved', 'rejected', 'editing', 'deleted'])
+  @IsIn([
+    'draft',
+    'pending_approval',
+    'approved',
+    'rejected',
+    'editing',
+    'deleted',
+  ])
   status?: string;
 
   @ApiPropertyOptional({
     description: 'Visibilidad del tema',
     example: 'public',
-    enum: ['public', 'organization', 'private']
+    enum: ['public', 'organization', 'private'],
   })
   @IsOptional()
   @IsString()

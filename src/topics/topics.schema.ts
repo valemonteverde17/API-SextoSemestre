@@ -9,7 +9,13 @@ export interface BlockStyle {
   fontWeight?: 'normal' | 'bold';
   fontStyle?: 'normal' | 'italic';
   textAlign?: 'left' | 'center' | 'right' | 'justify';
-  listStyle?: 'disc' | 'circle' | 'square' | 'decimal' | 'lower-alpha' | 'upper-alpha';
+  listStyle?:
+    | 'disc'
+    | 'circle'
+    | 'square'
+    | 'decimal'
+    | 'lower-alpha'
+    | 'upper-alpha';
   backgroundColor?: string;
   codeLanguage?: string;
   codeTheme?: 'dark' | 'light';
@@ -39,16 +45,23 @@ export class Topics {
   @Prop({ type: Types.ObjectId, ref: 'Category', required: false })
   category_id?: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'Users', required: false }) 
+  @Prop({ type: Types.ObjectId, ref: 'Users', required: false })
   created_by?: Types.ObjectId;
 
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Users' }], default: [] })
   edit_permissions?: Types.ObjectId[];
 
-  @Prop({ 
-    type: String, 
-    enum: ['draft', 'pending_approval', 'approved', 'editing', 'rejected', 'deleted'],
-    default: 'draft' 
+  @Prop({
+    type: String,
+    enum: [
+      'draft',
+      'pending_approval',
+      'approved',
+      'editing',
+      'rejected',
+      'deleted',
+    ],
+    default: 'draft',
   })
   status: string;
 
@@ -73,7 +86,16 @@ export class Topics {
   @Prop({ type: Types.ObjectId, ref: 'Users' })
   deleted_by?: Types.ObjectId;
 
-  @Prop({ type: [{ date: Date, user: { type: Types.ObjectId, ref: 'Users' }, action: String }], default: [] })
+  @Prop({
+    type: [
+      {
+        date: Date,
+        user: { type: Types.ObjectId, ref: 'Users' },
+        action: String,
+      },
+    ],
+    default: [],
+  })
   history?: { date: Date; user: Types.ObjectId; action: string }[];
 
   @Prop({ default: '#2b9997' })
