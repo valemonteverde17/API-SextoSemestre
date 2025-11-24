@@ -1,4 +1,9 @@
-import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
 /**
@@ -25,7 +30,10 @@ export class OrganizationGuard implements CanActivate {
     }
 
     // Obtener el organization_id del recurso (puede venir de params, body o query)
-    const resourceOrgId = params.organizationId || body.organization_id || request.query.organization_id;
+    const resourceOrgId =
+      params.organizationId ||
+      body.organization_id ||
+      request.query.organization_id;
 
     // Si no hay organization_id en el recurso, verificar que el usuario tenga organización
     if (!resourceOrgId) {
@@ -34,8 +42,13 @@ export class OrganizationGuard implements CanActivate {
     }
 
     // Verificar que el usuario pertenezca a la misma organización
-    if (user.organization_id && user.organization_id.toString() !== resourceOrgId.toString()) {
-      throw new ForbiddenException('No tienes permiso para acceder a recursos de otra organización');
+    if (
+      user.organization_id &&
+      user.organization_id.toString() !== resourceOrgId.toString()
+    ) {
+      throw new ForbiddenException(
+        'No tienes permiso para acceder a recursos de otra organización',
+      );
     }
 
     return true;

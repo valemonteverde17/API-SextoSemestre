@@ -54,7 +54,11 @@ export class QuizSetController {
   @Patch(':id')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update quiz set (Docente/Admin only)' })
-  update(@Param('id') id: string, @Body() updateQuizSetDto: UpdateQuizSetDto, @GetUser() user: any) {
+  update(
+    @Param('id') id: string,
+    @Body() updateQuizSetDto: UpdateQuizSetDto,
+    @GetUser() user: any,
+  ) {
     return this.quizSetService.update(id, updateQuizSetDto, user);
   }
 

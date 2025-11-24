@@ -9,7 +9,7 @@ import { Hangman } from './hangman.schema';
 export class HangmanService {
   constructor(
     @InjectModel(Hangman.name)
-    private readonly hangmanModel: Model<Hangman>
+    private readonly hangmanModel: Model<Hangman>,
   ) {}
 
   async create(createHangmanDto: CreateHangmanDto) {
@@ -30,7 +30,7 @@ export class HangmanService {
 
   async update(id: string, updateHangmanDto: UpdateHangmanDto) {
     return this.hangmanModel.findByIdAndUpdate(id, updateHangmanDto, {
-      new: true
+      new: true,
     });
   }
 

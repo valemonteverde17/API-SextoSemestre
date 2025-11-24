@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -14,23 +19,27 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto): Promise<Users> {
     // Verificar si el username ya existe
-    const existingUser = await this.usersModel.findOne({ user_name: createUserDto.user_name }).exec();
+    const existingUser = await this.usersModel
+      .findOne({ user_name: createUserDto.user_name })
+      .exec();
     if (existingUser) {
       throw new ConflictException('Username already exists');
     }
 
     // Validar que el rol sea válido
     if (!['docente', 'estudiante'].includes(createUserDto.role)) {
-      throw new BadRequestException('Invalid role. Must be "docente" or "estudiante"');
+      throw new BadRequestException(
+        'Invalid role. Must be "docente" or "estudiante"',
+      );
     }
 
     // Hashear la contraseña antes de guardarla
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-    
+
     const newUser = new this.usersModel({
       user_name: createUserDto.user_name,
       password: hashedPassword,
-      role: createUserDto.role // Ahora es un string
+      role: createUserDto.role, // Ahora es un string
     });
 
     try {
@@ -41,7 +50,9 @@ export class UsersService {
   }
 
   async createAdmin(createUserDto: CreateUserDto): Promise<Users> {
-    const existingUser = await this.usersModel.findOne({ user_name: createUserDto.user_name }).exec();
+    const existingUser = await this.usersModel
+      .findOne({ user_name: createUserDto.user_name })
+      .exec();
     if (existingUser) {
       return existingUser; // Si ya existe, retornamos el existente
     }
@@ -50,17 +61,26 @@ export class UsersService {
       user_name: createUserDto.user_name,
       password: hashedPassword,
       role: 'admin',
-      status: 'active' // Admin nace activo
+      status: 'active', // Admin nace activo
     });
     return await newUser.save();
   }
 
   async findPending(): Promise<Users[]> {
-    return this.usersModel.find({ status: 'pending' }).select('-password').exec();
+    return this.usersModel
+      .find({ status: 'pending' })
+      .select('-password')
+      .exec();
   }
 
-  async updateStatus(id: string, status: 'active' | 'rejected'): Promise<Users> {
-    const updatedUser = await this.usersModel.findByIdAndUpdate(id, { status }, { new: true }).select('-password').exec();
+  async updateStatus(
+    id: string,
+    status: 'active' | 'rejected',
+  ): Promise<Users> {
+    const updatedUser = await this.usersModel
+      .findByIdAndUpdate(id, { status }, { new: true })
+      .select('-password')
+      .exec();
     if (!updatedUser) throw new NotFoundException('User not found');
     return updatedUser;
   }
@@ -80,9 +100,12 @@ export class UsersService {
   }
 
   async findByUsername(username: string): Promise<UsersDocument | null> {
-    return this.usersModel.findOne({ user_name: username }).select('+password').exec();
+    return this.usersModel
+      .findOne({ user_name: username })
+      .select('+password')
+      .exec();
   }
-  
+
   async update(id: string, updateUserDto: UpdateUserDto): Promise<Users> {
     // Si se actualiza la contraseña, hashearla
     if (updateUserDto.password) {
@@ -90,8 +113,13 @@ export class UsersService {
     }
 
     // Validar el rol si se está actualizando
-    if (updateUserDto.role && !['docente', 'estudiante'].includes(updateUserDto.role)) {
-      throw new BadRequestException('Invalid role. Must be "docente" or "estudiante"');
+    if (
+      updateUserDto.role &&
+      !['docente', 'estudiante'].includes(updateUserDto.role)
+    ) {
+      throw new BadRequestException(
+        'Invalid role. Must be "docente" or "estudiante"',
+      );
     }
 
     const updatedUser = await this.usersModel
@@ -106,7 +134,10 @@ export class UsersService {
   }
 
   async remove(id: string): Promise<Users> {
-    const deletedUser = await this.usersModel.findByIdAndDelete(id).select('-password').exec();
+    const deletedUser = await this.usersModel
+      .findByIdAndDelete(id)
+      .select('-password')
+      .exec();
     if (!deletedUser) {
       throw new NotFoundException(`User with id ${id} not found`);
     }
@@ -117,10 +148,10 @@ export class UsersService {
   async validateUser(username: string, pass: string): Promise<Users | null> {
     const user = await this.usersModel.findOne({ user_name: username });
     if (!user) return null;
-  
+
     const isPasswordValid = await bcrypt.compare(pass, user.password);
     if (!isPasswordValid) return null;
-  
+
     const userObject = user.toObject() as Partial<Users>;
     delete userObject.password;
     return userObject as Users;

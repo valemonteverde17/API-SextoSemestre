@@ -6,9 +6,9 @@ import { Hangman, HangmanSchema } from './hangman.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Hangman.name, schema: HangmanSchema }])
+    MongooseModule.forFeature([{ name: Hangman.name, schema: HangmanSchema }]),
   ],
   controllers: [HangmanController],
-  providers: [HangmanService]
+  providers: [HangmanService],
 })
 export class HangmanModule {}

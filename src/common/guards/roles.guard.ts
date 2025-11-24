@@ -1,4 +1,9 @@
-import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
 /**
@@ -32,7 +37,7 @@ export class RolesGuard implements CanActivate {
 
     if (!hasRole) {
       throw new ForbiddenException(
-        `Se requiere uno de los siguientes roles: ${requiredRoles.join(', ')}`
+        `Se requiere uno de los siguientes roles: ${requiredRoles.join(', ')}`,
       );
     }
 

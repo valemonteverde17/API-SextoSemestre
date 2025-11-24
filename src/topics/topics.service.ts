@@ -1,4 +1,10 @@
-import { Injectable, NotFoundException, ConflictException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CreateTopicDto } from './dto/create-topic.dto';
@@ -11,23 +17,33 @@ export class TopicsService {
     @InjectModel(Topics.name) private topicsModel: Model<TopicsDocument>,
   ) {}
 
-  async create(createTopicDto: CreateTopicDto, userId: string, role: string): Promise<Topics> {
-    const existingTopic = await this.topicsModel.findOne({ topic_name: createTopicDto.topic_name }).exec();
+  async create(
+    createTopicDto: CreateTopicDto,
+    userId: string,
+    role: string,
+  ): Promise<Topics> {
+    const existingTopic = await this.topicsModel
+      .findOne({ topic_name: createTopicDto.topic_name })
+      .exec();
     if (existingTopic) {
       throw new ConflictException('Topic name already exists');
     }
 
     const newTopicData = {
       ...createTopicDto,
-      category_id: createTopicDto.category_id ? new Types.ObjectId(createTopicDto.category_id) : undefined,
+      category_id: createTopicDto.category_id
+        ? new Types.ObjectId(createTopicDto.category_id)
+        : undefined,
       created_by: new Types.ObjectId(userId),
       status: role === 'admin' ? 'approved' : 'draft', // Admin crea aprobados, docentes en borrador
       is_approved: role === 'admin', // Deprecated - mantener compatibilidad
-      history: [{
-        date: new Date(),
-        user: new Types.ObjectId(userId),
-        action: 'create'
-      }]
+      history: [
+        {
+          date: new Date(),
+          user: new Types.ObjectId(userId),
+          action: 'create',
+        },
+      ],
     };
 
     const newTopic = new this.topicsModel(newTopicData);
@@ -41,44 +57,50 @@ export class TopicsService {
 
   async findAll(query?: any): Promise<Topics[]> {
     const filter: any = { is_deleted: false };
-    
+
     // Por defecto, solo mostrar temas aprobados (para estudiantes y vista pública)
     if (!query?.all) {
       filter.status = 'approved';
     }
-    
+
     if (query?.category) {
       filter.category_id = new Types.ObjectId(query.category);
     }
     if (query?.search) {
-        filter.topic_name = { $regex: query.search, $options: 'i' };
+      filter.topic_name = { $regex: query.search, $options: 'i' };
     }
-    
+
     // Si se pasa ?all=true (para admin/docentes), traer todos los temas sin filtro de status
     if (query?.all === 'true') {
-        delete filter.status;
+      delete filter.status;
     }
-    
+
     return this.topicsModel
       .find(filter)
       .populate('created_by', 'user_name')
       .populate('edit_permissions', 'user_name')
       .exec();
   }
-  
+
   async findTrash(): Promise<Topics[]> {
-      return this.topicsModel.find({ is_deleted: true }).populate('deleted_by', 'user_name').exec();
+    return this.topicsModel
+      .find({ is_deleted: true })
+      .populate('deleted_by', 'user_name')
+      .exec();
   }
 
   async findPending(): Promise<Topics[]> {
-      return this.topicsModel.find({ is_deleted: false, is_approved: false }).populate('created_by', 'user_name').exec();
+    return this.topicsModel
+      .find({ is_deleted: false, is_approved: false })
+      .populate('created_by', 'user_name')
+      .exec();
   }
 
   async approve(id: string): Promise<Topics> {
-      const topic = await this.topicsModel.findById(id).exec();
-      if (!topic) throw new NotFoundException(`Topic with id ${id} not found`);
-      topic.is_approved = true;
-      return await topic.save();
+    const topic = await this.topicsModel.findById(id).exec();
+    if (!topic) throw new NotFoundException(`Topic with id ${id} not found`);
+    topic.is_approved = true;
+    return await topic.save();
   }
 
   async findOne(id: string): Promise<Topics> {
@@ -98,14 +120,20 @@ export class TopicsService {
   }
 
   async findByName(topic_name: string): Promise<Topics> {
-    const topic = await this.topicsModel.findOne({ topic_name, is_deleted: false }).exec();
+    const topic = await this.topicsModel
+      .findOne({ topic_name, is_deleted: false })
+      .exec();
     if (!topic) {
       throw new NotFoundException(`Topic with name ${topic_name} not found`);
     }
     return topic;
   }
 
-  async update(id: string, updateTopicDto: UpdateTopicDto, user: any): Promise<Topics> {
+  async update(
+    id: string,
+    updateTopicDto: UpdateTopicDto,
+    user: any,
+  ): Promise<Topics> {
     if (!Types.ObjectId.isValid(id)) {
       throw new BadRequestException('Invalid topic ID');
     }
@@ -116,42 +144,52 @@ export class TopicsService {
     // Check permissions
     const isOwner = topic.created_by?.toString() === user._id;
     const isAdmin = user.role === 'admin';
-    const canEdit = isOwner || isAdmin || (topic.edit_permissions && topic.edit_permissions.some(uid => uid.toString() === user._id));
+    const canEdit =
+      isOwner ||
+      isAdmin ||
+      (topic.edit_permissions &&
+        topic.edit_permissions.some((uid) => uid.toString() === user._id));
 
     if (!canEdit) {
-        throw new ForbiddenException('You do not have permission to edit this topic');
+      throw new ForbiddenException(
+        'You do not have permission to edit this topic',
+      );
     }
 
     if (updateTopicDto.category_id) {
-      updateTopicDto.category_id = new Types.ObjectId(updateTopicDto.category_id) as any;
+      updateTopicDto.category_id = new Types.ObjectId(
+        updateTopicDto.category_id,
+      ) as any;
     }
 
     if (updateTopicDto.topic_name) {
-      const existingTopic = await this.topicsModel.findOne({ topic_name: updateTopicDto.topic_name }).exec();
+      const existingTopic = await this.topicsModel
+        .findOne({ topic_name: updateTopicDto.topic_name })
+        .exec();
       if (existingTopic && existingTopic._id.toString() !== id) {
         throw new ConflictException('Topic name already exists');
       }
     }
 
     const historyEntry = {
-        date: new Date(),
-        user: new Types.ObjectId(user._id),
-        action: 'update'
+      date: new Date(),
+      user: new Types.ObjectId(user._id),
+      action: 'update',
     };
 
     const updatedTopic = await this.topicsModel
       .findByIdAndUpdate(
-          id, 
-          { 
-              $set: updateTopicDto, 
-              $push: { history: historyEntry } 
-          }, 
-          { new: true }
+        id,
+        {
+          $set: updateTopicDto,
+          $push: { history: historyEntry },
+        },
+        { new: true },
       )
       .exec();
 
     if (!updatedTopic) {
-        throw new NotFoundException(`Topic with id ${id} not found`);
+      throw new NotFoundException(`Topic with id ${id} not found`);
     }
 
     return updatedTopic;
@@ -161,7 +199,7 @@ export class TopicsService {
     if (!Types.ObjectId.isValid(id)) {
       throw new BadRequestException('Invalid topic ID');
     }
-    
+
     const topic = await this.topicsModel.findById(id).exec();
     if (!topic) throw new NotFoundException(`Topic with id ${id} not found`);
 
@@ -169,26 +207,28 @@ export class TopicsService {
     const isAdmin = user.role === 'admin';
 
     if (!isOwner && !isAdmin) {
-        throw new ForbiddenException('Only the owner or admin can delete this topic');
+      throw new ForbiddenException(
+        'Only the owner or admin can delete this topic',
+      );
     }
 
     // Soft Delete
     topic.is_deleted = true;
     topic.deleted_at = new Date();
     topic.deleted_by = new Types.ObjectId(user._id);
-    
+
     return await topic.save();
   }
 
   async restore(id: string): Promise<Topics> {
-      const topic = await this.topicsModel.findById(id).exec();
-      if (!topic) throw new NotFoundException(`Topic with id ${id} not found`);
-      
-      topic.is_deleted = false;
-      topic.deleted_at = undefined;
-      topic.deleted_by = undefined;
-      
-      return await topic.save();
+    const topic = await this.topicsModel.findById(id).exec();
+    if (!topic) throw new NotFoundException(`Topic with id ${id} not found`);
+
+    topic.is_deleted = false;
+    topic.deleted_at = undefined;
+    topic.deleted_by = undefined;
+
+    return await topic.save();
   }
 
   async submitForApproval(id: string, userId: string): Promise<Topics> {
@@ -201,8 +241,14 @@ export class TopicsService {
     }
 
     // Validar estado actual
-    if (topic.status !== 'draft' && topic.status !== 'editing' && topic.status !== 'rejected') {
-      throw new BadRequestException(`Cannot submit topic with status: ${topic.status}`);
+    if (
+      topic.status !== 'draft' &&
+      topic.status !== 'editing' &&
+      topic.status !== 'rejected'
+    ) {
+      throw new BadRequestException(
+        `Cannot submit topic with status: ${topic.status}`,
+      );
     }
 
     topic.status = 'pending_approval';
@@ -210,7 +256,7 @@ export class TopicsService {
     topic.history.push({
       date: new Date(),
       user: new Types.ObjectId(userId),
-      action: 'submit_for_approval'
+      action: 'submit_for_approval',
     });
 
     return await topic.save();
@@ -231,13 +277,17 @@ export class TopicsService {
     topic.history.push({
       date: new Date(),
       user: new Types.ObjectId(userId),
-      action: 'approve'
+      action: 'approve',
     });
 
     return await topic.save();
   }
 
-  async rejectTopic(id: string, userId: string, reason?: string): Promise<Topics> {
+  async rejectTopic(
+    id: string,
+    userId: string,
+    reason?: string,
+  ): Promise<Topics> {
     const topic = await this.topicsModel.findById(id).exec();
     if (!topic) throw new NotFoundException(`Topic with id ${id} not found`);
 
@@ -251,7 +301,7 @@ export class TopicsService {
     topic.history.push({
       date: new Date(),
       user: new Types.ObjectId(userId),
-      action: `reject${reason ? `: ${reason}` : ''}`
+      action: `reject${reason ? `: ${reason}` : ''}`,
     });
 
     return await topic.save();
@@ -263,14 +313,20 @@ export class TopicsService {
 
     // Validar que sea creador o colaborador
     const isOwner = topic.created_by?.toString() === userId;
-    const isCollaborator = topic.edit_permissions?.some(uid => uid.toString() === userId);
-    
+    const isCollaborator = topic.edit_permissions?.some(
+      (uid) => uid.toString() === userId,
+    );
+
     if (!isOwner && !isCollaborator) {
-      throw new ForbiddenException('Only creator or collaborators can request edit');
+      throw new ForbiddenException(
+        'Only creator or collaborators can request edit',
+      );
     }
 
     if (topic.status !== 'approved') {
-      throw new BadRequestException('Can only request edit for approved topics');
+      throw new BadRequestException(
+        'Can only request edit for approved topics',
+      );
     }
 
     topic.edit_request_pending = true;
@@ -280,7 +336,7 @@ export class TopicsService {
     topic.history.push({
       date: new Date(),
       user: new Types.ObjectId(userId),
-      action: 'request_edit'
+      action: 'request_edit',
     });
 
     return await topic.save();
@@ -300,7 +356,7 @@ export class TopicsService {
     topic.history.push({
       date: new Date(),
       user: new Types.ObjectId(userId),
-      action: 'approve_edit_request'
+      action: 'approve_edit_request',
     });
 
     return await topic.save();
@@ -321,15 +377,20 @@ export class TopicsService {
     topic.history.push({
       date: new Date(),
       user: new Types.ObjectId(userId),
-      action: 'reject_edit_request'
+      action: 'reject_edit_request',
     });
 
     return await topic.save();
   }
 
-  async addCollaborator(topicId: string, collaboratorId: string, requestingUserId: string): Promise<Topics> {
+  async addCollaborator(
+    topicId: string,
+    collaboratorId: string,
+    requestingUserId: string,
+  ): Promise<Topics> {
     const topic = await this.topicsModel.findById(topicId).exec();
-    if (!topic) throw new NotFoundException(`Topic with id ${topicId} not found`);
+    if (!topic)
+      throw new NotFoundException(`Topic with id ${topicId} not found`);
 
     // Solo creador o admin pueden añadir colaboradores
     const isOwner = topic.created_by?.toString() === requestingUserId;
@@ -338,7 +399,9 @@ export class TopicsService {
     }
 
     // Verificar que no esté ya en la lista
-    const alreadyCollaborator = topic.edit_permissions?.some(uid => uid.toString() === collaboratorId);
+    const alreadyCollaborator = topic.edit_permissions?.some(
+      (uid) => uid.toString() === collaboratorId,
+    );
     if (alreadyCollaborator) {
       throw new ConflictException('User is already a collaborator');
     }
@@ -352,34 +415,43 @@ export class TopicsService {
     topic.history.push({
       date: new Date(),
       user: new Types.ObjectId(requestingUserId),
-      action: `add_collaborator:${collaboratorId}`
+      action: `add_collaborator:${collaboratorId}`,
     });
 
     return await topic.save();
   }
 
-  async removeCollaborator(topicId: string, collaboratorId: string, requestingUserId: string): Promise<Topics> {
+  async removeCollaborator(
+    topicId: string,
+    collaboratorId: string,
+    requestingUserId: string,
+  ): Promise<Topics> {
     const topic = await this.topicsModel.findById(topicId).exec();
-    if (!topic) throw new NotFoundException(`Topic with id ${topicId} not found`);
+    if (!topic)
+      throw new NotFoundException(`Topic with id ${topicId} not found`);
 
     const isOwner = topic.created_by?.toString() === requestingUserId;
     if (!isOwner) {
       throw new ForbiddenException('Only the creator can remove collaborators');
     }
 
-    topic.edit_permissions = topic.edit_permissions?.filter(uid => uid.toString() !== collaboratorId) || [];
+    topic.edit_permissions =
+      topic.edit_permissions?.filter(
+        (uid) => uid.toString() !== collaboratorId,
+      ) || [];
     if (!topic.history) topic.history = [];
     topic.history.push({
       date: new Date(),
       user: new Types.ObjectId(requestingUserId),
-      action: `remove_collaborator:${collaboratorId}`
+      action: `remove_collaborator:${collaboratorId}`,
     });
 
     return await topic.save();
   }
 
   async findByStatus(status: string): Promise<Topics[]> {
-    return this.topicsModel.find({ status, is_deleted: false })
+    return this.topicsModel
+      .find({ status, is_deleted: false })
       .populate('created_by', 'user_name')
       .populate('edit_requested_by', 'user_name')
       .populate('edit_permissions', 'user_name')
@@ -387,7 +459,8 @@ export class TopicsService {
   }
 
   async findEditRequests(): Promise<Topics[]> {
-    return this.topicsModel.find({ edit_request_pending: true, is_deleted: false })
+    return this.topicsModel
+      .find({ edit_request_pending: true, is_deleted: false })
       .populate('created_by', 'user_name')
       .populate('edit_requested_by', 'user_name')
       .exec();

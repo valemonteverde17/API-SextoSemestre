@@ -1,4 +1,9 @@
-import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 
@@ -33,7 +38,7 @@ export class AuthGuard implements CanActivate {
     // Verificar que el usuario esté activo
     if (user.status !== 'active') {
       throw new UnauthorizedException(
-        `Usuario ${user.status}. Contacte al administrador.`
+        `Usuario ${user.status}. Contacte al administrador.`,
       );
     }
 

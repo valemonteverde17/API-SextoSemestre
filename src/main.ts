@@ -8,12 +8,13 @@ async function bootstrap() {
   // 👉 Esto habilita CORS para que el frontend pueda conectarse
   app.enableCors({
     origin: process.env.CORS_ORIGIN ?? 'http://localhost:5173', // permite peticiones desde tu frontend de Vite
-    credentials: true,               // opcional, si luego manejas cookies/tokens
+    credentials: true, // opcional, si luego manejas cookies/tokens
   });
 
   const config = new DocumentBuilder()
     .setTitle('CiberEduca API')
-    .setDescription(`
+    .setDescription(
+      `
 API para la plataforma educativa CiberEduca.
 
 **Autenticación:**
@@ -21,7 +22,8 @@ API para la plataforma educativa CiberEduca.
 - Obtén un token usando POST /auth/login
 - Haz clic en el botón "Authorize" arriba y pega el token (sin 'Bearer')
 - El token se incluirá automáticamente en todas las peticiones
-    `)
+    `,
+    )
     .setVersion('1.0')
     .addBearerAuth(
       {

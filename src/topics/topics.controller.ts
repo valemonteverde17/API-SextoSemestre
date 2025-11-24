@@ -1,17 +1,34 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UsePipes, ValidationPipe, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UsePipes,
+  ValidationPipe,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { TopicsService } from './topics.service';
 import { CreateTopicDto } from './dto/create-topic.dto';
 import { UpdateTopicDto } from './dto/update-topic.dto';
-import { ApiTags, ApiResponse, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiResponse,
+  ApiOperation,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { AuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { GetUser } from '../common/decorators/get-user.decorator';
 
-@ApiTags('Topics') 
-@ApiBearerAuth() 
+@ApiTags('Topics')
+@ApiBearerAuth()
 @Controller('topics')
-@UsePipes(new ValidationPipe({ transform: true })) 
+@UsePipes(new ValidationPipe({ transform: true }))
 export class TopicsController {
   constructor(private readonly topicsService: TopicsService) {}
 
@@ -51,7 +68,9 @@ export class TopicsController {
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin')
   @Get('edit-requests')
-  @ApiOperation({ summary: 'Get topics with pending edit requests (Admin only)' })
+  @ApiOperation({
+    summary: 'Get topics with pending edit requests (Admin only)',
+  })
   findEditRequests() {
     return this.topicsService.findEditRequests();
   }
@@ -100,7 +119,11 @@ export class TopicsController {
   @Roles('admin')
   @Patch(':id/reject-topic')
   @ApiOperation({ summary: 'Reject topic (Admin only)' })
-  rejectTopic(@Param('id') id: string, @Body() body: { reason?: string }, @GetUser('_id') userId: string) {
+  rejectTopic(
+    @Param('id') id: string,
+    @Body() body: { reason?: string },
+    @GetUser('_id') userId: string,
+  ) {
     return this.topicsService.rejectTopic(id, userId, body.reason);
   }
 
@@ -132,7 +155,11 @@ export class TopicsController {
   @Roles('docente', 'admin')
   @Post(':id/collaborators')
   @ApiOperation({ summary: 'Add collaborator to topic' })
-  addCollaborator(@Param('id') id: string, @Body() body: { collaboratorId: string }, @GetUser('_id') userId: string) {
+  addCollaborator(
+    @Param('id') id: string,
+    @Body() body: { collaboratorId: string },
+    @GetUser('_id') userId: string,
+  ) {
     return this.topicsService.addCollaborator(id, body.collaboratorId, userId);
   }
 
@@ -140,7 +167,11 @@ export class TopicsController {
   @Roles('docente', 'admin')
   @Delete(':id/collaborators/:collaboratorId')
   @ApiOperation({ summary: 'Remove collaborator from topic' })
-  removeCollaborator(@Param('id') id: string, @Param('collaboratorId') collaboratorId: string, @GetUser('_id') userId: string) {
+  removeCollaborator(
+    @Param('id') id: string,
+    @Param('collaboratorId') collaboratorId: string,
+    @GetUser('_id') userId: string,
+  ) {
     return this.topicsService.removeCollaborator(id, collaboratorId, userId);
   }
 
@@ -158,7 +189,11 @@ export class TopicsController {
   @ApiOperation({ summary: 'Update topic information' })
   @ApiResponse({ status: 200, description: 'Topic updated' })
   @ApiResponse({ status: 404, description: 'Topic not found' })
-  update(@Param('id') id: string, @Body() updateTopicDto: UpdateTopicDto, @GetUser() user: any) {
+  update(
+    @Param('id') id: string,
+    @Body() updateTopicDto: UpdateTopicDto,
+    @GetUser() user: any,
+  ) {
     return this.topicsService.update(id, updateTopicDto, user);
   }
 

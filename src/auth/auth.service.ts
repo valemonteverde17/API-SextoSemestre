@@ -20,13 +20,13 @@ export class AuthService {
   async validateUser(username: string, password: string): Promise<any> {
     // Buscar por username
     const user = await this.usersService.findByUsername(username);
-    
+
     if (!user) {
       throw new UnauthorizedException('Usuario no encontrado');
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    
+
     if (!isPasswordValid) {
       throw new UnauthorizedException('Contraseña incorrecta');
     }
@@ -34,7 +34,7 @@ export class AuthService {
     // Verificar que el usuario esté activo
     if (user.status !== 'active') {
       throw new UnauthorizedException(
-        `Usuario ${user.status}. Contacte al administrador.`
+        `Usuario ${user.status}. Contacte al administrador.`,
       );
     }
 
@@ -45,7 +45,7 @@ export class AuthService {
 
   async login(user: any) {
     const userId = user._id || user.id;
-    
+
     const payload: JwtPayload = {
       _id: userId.toString(),
       user_name: user.user_name,
@@ -67,12 +67,12 @@ export class AuthService {
   async register(createUserDto: any) {
     const user: any = await this.usersService.create(createUserDto);
     const userObj = user.toObject ? user.toObject() : user;
-    
+
     // Si el usuario queda activo, generar token
     if (userObj.status === 'active') {
       return this.login(userObj);
     }
-    
+
     // Si queda pendiente, retornar sin token
     return {
       message: 'Usuario registrado. Esperando aprobación del administrador.',

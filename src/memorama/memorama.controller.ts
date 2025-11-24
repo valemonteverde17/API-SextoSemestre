@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { MemoramaService } from './memorama.service';
 import { CreateMemoramaDto } from './dto/create-memorama.dto';
@@ -39,7 +48,10 @@ export class MemoramaController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update a memorama pair' })
-  update(@Param('id') id: string, @Body() updateMemoramaDto: UpdateMemoramaDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateMemoramaDto: UpdateMemoramaDto,
+  ) {
     return this.memoramaService.update(id, updateMemoramaDto);
   }
 

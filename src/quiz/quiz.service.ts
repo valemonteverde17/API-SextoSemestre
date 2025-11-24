@@ -7,9 +7,7 @@ import { UpdateQuizDto } from './dto/update-quiz.dto';
 
 @Injectable()
 export class QuizService {
-  constructor(
-    @InjectModel(Quiz.name) private quizModel: Model<QuizDocument>
-  ) {}
+  constructor(@InjectModel(Quiz.name) private quizModel: Model<QuizDocument>) {}
 
   async create(dto: CreateQuizDto): Promise<Quiz> {
     const quiz = new this.quizModel(dto);
@@ -25,7 +23,10 @@ export class QuizService {
   }
 
   async findByQuizSet(quizSetId: string): Promise<Quiz[]> {
-    return this.quizModel.find({ quiz_set_id: quizSetId }).sort({ order: 1 }).exec();
+    return this.quizModel
+      .find({ quiz_set_id: quizSetId })
+      .sort({ order: 1 })
+      .exec();
   }
 
   async findOne(id: string): Promise<Quiz> {
@@ -35,7 +36,9 @@ export class QuizService {
   }
 
   async update(id: string, dto: UpdateQuizDto): Promise<Quiz> {
-    const quiz = await this.quizModel.findByIdAndUpdate(id, dto, { new: true }).exec();
+    const quiz = await this.quizModel
+      .findByIdAndUpdate(id, dto, { new: true })
+      .exec();
     if (!quiz) throw new NotFoundException(`Quiz con id ${id} no encontrado`);
     return quiz;
   }

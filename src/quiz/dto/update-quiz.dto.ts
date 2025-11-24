@@ -6,4 +6,3 @@ export class UpdateQuizDto {
   @IsOptional() @IsString() correctAnswer?: string;
   @IsOptional() @IsMongoId() topic_id?: string;
 }
-

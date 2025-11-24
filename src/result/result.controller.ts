@@ -22,10 +22,9 @@ export class ResultController {
   getScore(@Param('userId') userId: string, @Param('topicId') topicId: string) {
     return this.resultService.getScoreByTopic(userId, topicId);
   }
-  
+
   @Get('ranking/global')
   getRanking() {
     return this.resultService.getGlobalRanking();
-}
-
+  }
 }

@@ -1,10 +1,25 @@
-import {Controller,Get,Post,Body,Patch,Param,Delete,UsePipes,ValidationPipe,Query,NotFoundException,UnauthorizedException,UseGuards} from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UsePipes,
+  ValidationPipe,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiTags, ApiResponse, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
-import { UsersDocument } from './users.schema';
-import * as bcrypt from 'bcrypt';
+import {
+  ApiTags,
+  ApiResponse,
+  ApiOperation,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { AuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -28,10 +43,13 @@ export class UsersController {
   @Roles('admin')
   @Patch(':id/status')
   @ApiOperation({ summary: 'Approve or Reject user (Admin only)' })
-  async updateStatus(@Param('id') id: string, @Body('status') status: 'active' | 'rejected') {
+  async updateStatus(
+    @Param('id') id: string,
+    @Body('status') status: 'active' | 'rejected',
+  ) {
     return this.usersService.updateStatus(id, status);
   }
-  
+
   /*
     @Post('login')
     ...
@@ -56,24 +74,25 @@ export class UsersController {
       };
     }
     */
-  
-
 
   @Post()
   @ApiOperation({ summary: 'Create a new user' })
-  @ApiResponse({ 
-    status: 201, 
+  @ApiResponse({
+    status: 201,
     description: 'User successfully created',
     schema: {
       example: {
         _id: '507f1f77bcf86cd799439011',
         user_name: 'profesor1',
         role: 'docente',
-        createdAt: '2023-05-18T14:00:00.000Z'
-      }
-    }
+        createdAt: '2023-05-18T14:00:00.000Z',
+      },
+    },
   })
-  @ApiResponse({ status: 400, description: 'Bad request - Invalid role or data' })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Invalid role or data',
+  })
   @ApiResponse({ status: 409, description: 'Username already exists' })
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
@@ -81,9 +100,9 @@ export class UsersController {
 
   @Get()
   @ApiOperation({ summary: 'Get all users (optionally filtered by role)' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'List of users'
+  @ApiResponse({
+    status: 200,
+    description: 'List of users',
   })
   findAll(@Query() query: any) {
     return this.usersService.findAll(query);
@@ -100,7 +119,10 @@ export class UsersController {
   @Patch(':id')
   @ApiOperation({ summary: 'Update user information' })
   @ApiResponse({ status: 200, description: 'User updated' })
-  @ApiResponse({ status: 400, description: 'Bad request - Invalid role or data' })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Invalid role or data',
+  })
   @ApiResponse({ status: 404, description: 'User not found' })
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);

@@ -11,9 +11,12 @@ import { UsersModule } from '../users/users.module';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET') || 'cibereduca-secret-key-2024',
+        secret:
+          configService.get<string>('JWT_SECRET') ||
+          'cibereduca-secret-key-2024',
         signOptions: {
-          expiresIn: (configService.get<string>('JWT_EXPIRES_IN') || '24h') as any,
+          expiresIn: (configService.get<string>('JWT_EXPIRES_IN') ||
+            '24h') as any,
         },
       }),
       inject: [ConfigService],
