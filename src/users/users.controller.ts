@@ -1,10 +1,13 @@
-import {Controller,Get,Post,Body,Patch,Param,Delete,UsePipes,ValidationPipe,Query,NotFoundException,UnauthorizedException} from '@nestjs/common';
+import {Controller,Get,Post,Body,Patch,Param,Delete,UsePipes,ValidationPipe,Query,NotFoundException,UnauthorizedException,UseGuards} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiTags, ApiResponse, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { UsersDocument } from './users.schema';
 import * as bcrypt from 'bcrypt';
+import { AuthGuard } from '../common/guards/auth.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -12,15 +15,26 @@ import * as bcrypt from 'bcrypt';
 @UsePipes(new ValidationPipe({ transform: true }))
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
+  @Get('pending')
+  @ApiOperation({ summary: 'Get pending users (Admin only)' })
+  async findPending() {
+    return this.usersService.findPending();
+  }
+
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
+  @Patch(':id/status')
+  @ApiOperation({ summary: 'Approve or Reject user (Admin only)' })
+  async updateStatus(@Param('id') id: string, @Body('status') status: 'active' | 'rejected') {
+    return this.usersService.updateStatus(id, status);
+  }
   
+  /*
     @Post('login')
-    @ApiOperation({ summary: 'Authenticate a user' })
-    @ApiResponse({
-      status: 200,
-      description: 'User authenticated successfully',
-      schema: {
-        example: {
-          _id: '507f1f77bcf86cd799439011',
+    ...
           user_name: 'profesor1',
           role: 'docente'
         }
@@ -41,7 +55,9 @@ export class UsersController {
         role: user.role
       };
     }
+    */
   
+
 
   @Post()
   @ApiOperation({ summary: 'Create a new user' })

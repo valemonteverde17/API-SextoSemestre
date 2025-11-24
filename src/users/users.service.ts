@@ -40,6 +40,31 @@ export class UsersService {
     }
   }
 
+  async createAdmin(createUserDto: CreateUserDto): Promise<Users> {
+    const existingUser = await this.usersModel.findOne({ user_name: createUserDto.user_name }).exec();
+    if (existingUser) {
+      return existingUser; // Si ya existe, retornamos el existente
+    }
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+    const newUser = new this.usersModel({
+      user_name: createUserDto.user_name,
+      password: hashedPassword,
+      role: 'admin',
+      status: 'active' // Admin nace activo
+    });
+    return await newUser.save();
+  }
+
+  async findPending(): Promise<Users[]> {
+    return this.usersModel.find({ status: 'pending' }).select('-password').exec();
+  }
+
+  async updateStatus(id: string, status: 'active' | 'rejected'): Promise<Users> {
+    const updatedUser = await this.usersModel.findByIdAndUpdate(id, { status }, { new: true }).select('-password').exec();
+    if (!updatedUser) throw new NotFoundException('User not found');
+    return updatedUser;
+  }
+
   async findAll(query?: any): Promise<Users[]> {
     // Filtrar por query params (ej. /users?role=docente)
     const filter = query?.role ? { role: query.role } : {};

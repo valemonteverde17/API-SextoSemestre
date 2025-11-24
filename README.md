@@ -23,7 +23,36 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+API Backend para la plataforma educativa **CiberEduca**. Construida con NestJS, MongoDB y autenticación JWT.
+
+## 🚀 Inicio Rápido
+
+### 1. Configuración Inicial
+
+```bash
+# Instalar dependencias
+$ npm install
+
+# Copiar archivo de variables de entorno
+$ cp .env.example .env
+
+# Editar .env con tus configuraciones
+# - JWT_SECRET: Clave secreta para JWT
+# - MONGO_URI: URL de conexión a MongoDB
+# - PORT: Puerto del servidor (default: 3000)
+```
+
+### 2. Variables de Entorno Requeridas
+
+Edita el archivo `.env` con tus valores:
+
+```env
+PORT=3000
+CORS_ORIGIN=http://localhost:5173
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+JWT_EXPIRES_IN=24h
+MONGO_URI=mongodb+srv://<user>:<password>@<cluster>/<db>?retryWrites=true&w=majority
+```
 
 ## Project setup
 
@@ -42,6 +71,44 @@ $ npm run start:dev
 
 # production mode
 $ npm run start:prod
+```
+
+## 📚 Documentación API
+
+Una vez que el servidor esté corriendo, accede a la documentación interactiva de Swagger:
+
+```
+http://localhost:3000/api
+```
+
+### 🔐 Autenticación en Swagger
+
+1. Haz login en `POST /auth/login`
+2. Copia el `access_token` de la respuesta
+3. Haz clic en el botón **"Authorize"** (arriba a la derecha)
+4. Pega el token (sin "Bearer")
+5. Ahora puedes probar endpoints protegidos
+
+**Para más detalles sobre autenticación, consulta:** [AUTHENTICATION.md](./AUTHENTICATION.md)
+
+## 🏗️ Estructura del Proyecto
+
+```
+src/
+├── auth/              # Autenticación y autorización
+├── common/            # Módulos compartidos
+│   ├── decorators/    # Decoradores personalizados (@Public, @Roles, @GetUser)
+│   ├── guards/        # Guards (AuthGuard, RolesGuard)
+│   ├── middleware/    # Middleware (JwtMiddleware)
+│   └── services/      # Servicios compartidos (ApprovalService)
+├── users/             # Gestión de usuarios
+├── topics/            # Gestión de temas educativos
+├── quiz/              # Sistema de quizzes
+├── quiz-set/          # Conjuntos de quizzes
+├── hangman/           # Juego del ahorcado
+├── memorama/          # Juego de memorama
+├── scores/            # Sistema de puntuaciones
+└── result/            # Resultados de juegos
 ```
 
 ## Run tests
